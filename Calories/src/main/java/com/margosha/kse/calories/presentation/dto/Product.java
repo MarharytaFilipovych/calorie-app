@@ -8,7 +8,6 @@ import lombok.Data;
 
 import java.util.UUID;
 
-
 @Data
 public class Product {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -68,5 +67,6 @@ public class Product {
 
     @NotNull(message = "Measurement unit is required")
     @CorrectEnum(enumClass = MeasurementUnit.class)
+    @JsonProperty("measurement_unit")
     private MeasurementUnit measurementUnit;
 }

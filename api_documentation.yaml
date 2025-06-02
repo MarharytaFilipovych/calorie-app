@@ -1,0 +1,652 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Calorie tracking API
+  description: this api may be utilized for tracking calories:)
+
+servers:
+  - url: http://calorie.love/v1
+
+paths:
+  /products:
+    get:
+      description: returns a list of products defined, configured. 
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/ProductName'
+      responses:
+        '200':
+          description: successfully returned a list of available products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  products:
+                    type: array
+                    description: list of products
+                    items:
+                      $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/400Error'
+    post:
+      description: use it to add a new product to the system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          $ref: '#/components/responses/201Created'
+        '400':
+          $ref: '#/components/responses/400Error'
+          
+  /products/{id}:
+    get:
+      description: observe the details of a particular product
+      parameters: 
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+          
+    put:
+      description: modify an existing product
+      parameters: 
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '204':
+          description: successfully updated (no content)
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+          
+    delete:
+      description: delete a product from the system
+      parameters: 
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          description: no content
+        '404':
+          $ref: '#/components/responses/404NotFound'
+  /users:
+    get:
+      description: returns a list of registered users
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: successfully returned a list of registered users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  users:
+                    type: array
+                    description: list of users
+                    items:
+                      $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/400Error'
+    post:
+      description: use it to add a new user to the system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          $ref: '#/components/responses/201Created'
+        '400':
+          $ref: '#/components/responses/400Error'
+          
+  /users/{id}:
+    get:
+      description: observe the details of a particular user
+      parameters: 
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+          
+    put:
+      description: update a user's profile
+      parameters: 
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '204':
+          description: successfully updated (no content)
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+          
+    delete:
+      description: delete a user from the system
+      parameters: 
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          description: no content
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  /users/{id}/daily-target:
+    get:
+      description: calculate daily calorie target for this user
+      parameters: 
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: ok, here is the daily calorie target
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daily_calorie_target:
+                    type: integer
+                    description: calculated daily calorie target based on the user's data
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+  /users/{userId}/records:
+    get:
+      description: get user's consumption records (with date filtering, default -> today)
+      parameters: 
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/ConsumptionDate'
+      responses:
+        '200':
+          description: ok, list of the user's records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+                  records:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RecordResponse'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+    post:
+      description: log new consumption record 
+      parameters: 
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/201Created'
+        '400':
+          $ref: '#/components/responses/400Error'
+
+  /users/{userId}/records/{id}:
+    put:
+      description: update the user's consumption record
+      parameters: 
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordRequest'
+      responses:
+        '204':
+          description: successfully updated (no content)
+        '400':
+          $ref: '#/components/responses/400Error'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+    delete:
+      description: delete the user's record from the system
+      parameters: 
+        - $ref: '#/components/parameters/UserId'
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          description: no content
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: unique product id
+          readOnly: true
+        name:
+          minLength: 2
+          maxLength: 150
+          type: string
+          description: product name
+        barcode:
+          minLength: 20
+          maxLength: 255
+          type: string
+          description: product barcode
+        proteins:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100          
+          description: protein value per 100 measurement
+        fats:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100          
+          description: number of grams of fat per 100 measurement
+        carbohydrates:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100          
+          description: number of grams of carbohydrate per 100 measurement  
+        water:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+          description: water value in % (0-100) per 100 measurement 
+        salt:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+          description: number of grams of salt per 100 measurement 
+        sugar:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+          description: number of grams of sugar per 100 measurement 
+        fiber:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100          
+          description: number of grams of fiber per 100 measurement   
+        alcohol:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100          
+          description: number of grams of alcohol per 100 measurement 
+        description:
+          type: string
+          nullable: true
+          description: something that needs to be told about a product
+        measurement_unit: 
+          type: string
+          enum: [grams, milliliters, pieces]
+          description: product's unit of measurement
+        calories:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: number of calories per 100 measurement; if it is not specified, it is calculated based on the provided data
+      required:
+        - name
+        - proteins
+        - fats
+        - carbohydrates
+        - water
+        - salt
+        - sugar
+        - fiber
+        - alcohol
+        - measurement_unit
+
+    Meta:
+      type: object
+      properties:
+        page: 
+          type: integer
+          minimum: 1
+          description: the number of the displayed page
+        total_count:
+          type: integer
+          minimum: 0
+          description: total number of items across all pages
+        page_size:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: the requested page size (limit in query)
+        total_pages:
+          type: integer
+          minimum: 0
+          description: total number of pages
+        has_next:
+          type: boolean
+          description: whether there are more pages available
+        has_previous:
+          type: boolean
+          description: whether there are previous pages
+      required:
+        - page
+        - total_count
+        - page_size
+        - total_pages
+        - has_next
+        - has_previous
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: unique user id
+          readOnly: true
+        email:
+          type: string
+          format: email
+          description: user's email, must be unique. There cannot be multiple users with the same email.
+        first_name:
+          minLength: 2
+          maxLength: 100
+          type: string
+          pattern: "^[\\p{L}\\s\\-.']+$"
+          description: user's name  
+        last_name:
+          minLength: 2
+          maxLength: 100
+          type: string
+          pattern: "^[\\p{L}\\s\\-.']+$"
+          description: user's surname 
+        telephone:
+          type: string
+          description: user's phone number. There can be several users with the same phone number. This property is optional
+          nullable: true
+          pattern: '^\+\d{1,4}\d{6,14}$'
+        birth_date:
+          type: string
+          format: date
+          description: when a user was born
+        gender:
+          type: string
+          enum: [male, female]
+          description: user's gender -> no undefined gender (keep in mind)
+        weight:
+          type: number
+          format: double
+          minimum: 20
+          maximum: 250
+          description: user's weight in kg
+        height:
+          type: number
+          format: double
+          minimum: 100
+          maximum: 230
+          description: user's height in cm
+        activity_level:
+          type: string
+          enum: [sedentary, low, moderate, high, very_high]
+          description: user's usual activity level during a day
+        goal:
+          type: string
+          enum: [lose, maintain, gain]
+          description: user's weight goal
+        target_weight:
+          type: number
+          format: double
+          nullable: true
+          minimum: 30
+          maximum: 120
+          description: user's target weight. This can be null if the user's goal is to maintain their current weight
+        registered_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+        - email
+        - first_name
+        - last_name
+        - birth_date
+        - gender
+        - weight
+        - height
+        - activity_level
+        - goal
+
+    RecordRequest:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              product_id:
+                type: string
+                format: uuid
+              quantity:
+                type: number
+                format: double
+                minimum: 0.1
+            required:
+              - product_id
+              - quantity
+        meal_type:
+          type: string
+          enum: [breakfast, lunch, dinner, first_snack, second_snack, third_snack]
+          description: meal type (this is a user's choice)
+        consumed_at:
+          type: string
+          format: date-time
+          description: when the meal was consumed (basically when this record was created)
+      required:
+        - products
+        - meal_type
+        - consumed_at
+    
+    RecordResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: unique record id 
+          readOnly: true
+        meal_type:
+          type: string
+          enum: [breakfast, lunch, dinner, first_snack, second_snack, third_snack]
+          description: meal type (this is a user's choice)
+        consumed_at:
+          type: string
+          format: date-time
+          description: when the meal was consumed (basically when this record was created)
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              product_id:
+                type: string
+                format: uuid
+                description: product's unique id
+              name:
+                type: string
+                minLength: 2
+                maxLength: 150
+                description: product's name
+              calories:
+                type: integer
+                minimum: 0
+                description: how many claories does this product have?
+              quantity:
+                type: number
+                format: double
+                minimum: 0.1
+                description: how much of this product is there?
+            required:
+              - product_id
+              - name
+              - quantity
+              - calories
+        calories_consumed:
+          type: integer
+          description: how many calories are consumed within this record
+        total_quantity:
+          type: number
+          format: double
+          description: total grams consumed
+      required:
+        - id
+        - meal_type
+        - consumed_at
+        - products
+        - calories_consumed
+        - total_quantity
+    
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      description: Limits the number of items on a page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    
+    ProductName:
+      name: name
+      in: query
+      description: search by product's name
+      schema:
+        type: string
+      
+    Offset:
+      name: offset
+      in: query
+      description: Specifies the page number to be displayed (1-based)
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+        
+    Id:
+      name: id
+      in: path
+      required: true
+      description: unique identifier of the resource
+      schema:
+        type: string
+        format: uuid
+    
+    UserId:
+      name: userId
+      in: path
+      required: true
+      description: unique identifier of the user
+      schema:
+        type: string
+        format: uuid
+
+    ConsumptionDate:
+      name: date
+      in: query
+      description: when the consumption record was logged (defaults to current date)
+      schema:
+        type: string
+        format: date
+        default: "today"
+
+  responses:
+    400Error:
+      description: invalid request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: error message describing what went wrong
+            required:
+              - message
+              
+    201Created:
+      description: successfully created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: id of the created resource
+            required:
+              - id
+              
+    404NotFound:
+      description: requested resource could not be found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: error message indicating resource was not found
+            required:
+              - message
