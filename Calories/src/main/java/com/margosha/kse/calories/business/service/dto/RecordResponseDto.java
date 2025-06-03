@@ -1,8 +1,8 @@
-package com.margosha.kse.calories.presentation.dto;
+package com.margosha.kse.calories.business.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.margosha.kse.calories.data.enums.MealType;
-import com.margosha.kse.calories.presentation.dto.subdto.ProductRecordInResponse;
+import com.margosha.kse.calories.business.service.dto.subdto.ProductRecordInResponseDto;
+import com.margosha.kse.calories.presentation.enums.MealType;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-public class RecordResponse {
+public class RecordResponseDto {
     private UUID id;
 
     @JsonProperty("meal_type")
@@ -19,7 +19,7 @@ public class RecordResponse {
     @JsonProperty("consumed_at")
     private LocalDateTime consumedAt;
 
-    private List<ProductRecordInResponse> products;
+    private List<ProductRecordInResponseDto> products;
 
     @JsonProperty("calories_consumed")
     private int caloriesConsumed;

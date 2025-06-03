@@ -1,4 +1,4 @@
-package com.margosha.kse.calories.presentation.dto;
+package com.margosha.kse.calories.business.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.margosha.kse.calories.presentation.enums.ActivityLevel;
@@ -10,11 +10,10 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-public class User {
+public class UserDto {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
@@ -70,7 +69,4 @@ public class User {
     @DecimalMax(value = "120", message = "Target weight cannot exceed 120 kg")
     @JsonProperty("target_weight")
     private Double targetWeight;
-
-    @JsonProperty(value = "registered_at", access = JsonProperty.Access.READ_ONLY)
-    private LocalDateTime registeredAt;
 }

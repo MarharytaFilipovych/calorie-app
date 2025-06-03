@@ -1,4 +1,4 @@
-package com.margosha.kse.calories.presentation.dto;
+package com.margosha.kse.calories.business.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.margosha.kse.calories.presentation.enums.MeasurementUnit;
@@ -9,7 +9,7 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class Product {
+public class ProductDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
 

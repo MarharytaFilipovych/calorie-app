@@ -1,12 +1,14 @@
-package com.margosha.kse.calories.presentation.dto.subdto;
+package com.margosha.kse.calories.business.service.dto.subdto;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.hibernate.validator.constraints.UUID;
 
 @Data
-public class ProductRecordInRequest {
+@AllArgsConstructor
+public class ProductRecordInRequestDto {
 
     @NotNull(message = "Product id is obligatory!")
     @UUID(message = "Product id must be a correct uuid!")

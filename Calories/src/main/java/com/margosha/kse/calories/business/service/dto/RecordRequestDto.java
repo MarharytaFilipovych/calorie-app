@@ -1,20 +1,22 @@
-package com.margosha.kse.calories.presentation.dto;
+package com.margosha.kse.calories.business.service.dto;
 
-import com.margosha.kse.calories.presentation.dto.subdto.ProductRecordInRequest;
+import com.margosha.kse.calories.business.service.dto.subdto.ProductRecordInRequestDto;
 import com.margosha.kse.calories.presentation.enums.MealType;
 import com.margosha.kse.calories.presentation.validation.CorrectEnum;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
 import java.util.List;
 
-public class RecordRequest {
+@Data
+public class RecordRequestDto {
     @NotNull(message = "Products list is required")
     @NotEmpty(message = "Products list cannot be empty")
     @Valid
-    private List<ProductRecordInRequest> products;
+    private List<ProductRecordInRequestDto> products;
 
     @NotNull(message = "Meal type property is obligatory!")
     @CorrectEnum(enumClass = MealType.class)

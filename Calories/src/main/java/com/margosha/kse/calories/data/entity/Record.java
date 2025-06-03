@@ -26,7 +26,7 @@ public class Record {
     @Column(name = "consumed_at", nullable = false)
     private LocalDateTime consumedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="user_id", nullable = false)
     private User user;
 
