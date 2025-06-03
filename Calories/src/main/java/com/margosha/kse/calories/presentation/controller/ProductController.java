@@ -3,6 +3,7 @@ package com.margosha.kse.calories.presentation.controller;
 import com.margosha.kse.calories.business.service.ProductService;
 import com.margosha.kse.calories.business.dto.ProductDto;
 import com.margosha.kse.calories.presentation.model.Meta;
+import com.margosha.kse.calories.presentation.model.Pagination;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -28,19 +29,10 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getProducts(
-            @RequestParam(required = false) String name,
-
-            @RequestParam(defaultValue = "20")
-            @Min(value = 1, message = "Limit must be at least 1")
-            @Max(value = 100, message = "Limit cannot exceed 100")
-            Integer limit,
-
-            @RequestParam(defaultValue = "1")
-            @Min(value = 1, message = "Offset must be at least 1")
-            Integer offset) {
-        Page<ProductDto> result = productService.getAll(name, limit, offset);
+            @RequestParam(required = false) String name, @Validated Pagination pagination) {
+        Page<ProductDto> result = productService.getAll(name, pagination.getLimit(), pagination.getOffset());
         return ResponseEntity.ok(Map.of(
-                "meta" , new Meta(offset, result.getTotalElements(), limit, result.getTotalPages()),
+                "meta" , new Meta(pagination.getLimit(), result.getTotalElements(), pagination.getOffset(), result.getTotalPages()),
                 "products", result.getContent()
         ));
     }
@@ -59,7 +51,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateProduct(@Valid @RequestBody ProductDto productDto, @PathVariable UUID id ){
-        productService.uodate(productDto, id);
+        productService.updateProduct(productDto, id);
         return ResponseEntity.noContent().build();
     }
 

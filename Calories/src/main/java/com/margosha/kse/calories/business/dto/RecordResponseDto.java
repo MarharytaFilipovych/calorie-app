@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -19,11 +20,20 @@ public class RecordResponseDto {
     @JsonProperty("consumed_at")
     private LocalDateTime consumedAt;
 
-    private List<ProductRecordInResponseDto> products;
+    private Set<ProductRecordInResponseDto> products;
 
     @JsonProperty("calories_consumed")
     private int caloriesConsumed;
 
     @JsonProperty("total_quantity")
     private double totalQuantity;
+
+    @JsonProperty("total_proteins")
+    private double totalProteins;
+
+    @JsonProperty("total_fats")
+    private double totalFats;
+
+    @JsonProperty("total_carbohydrates")
+    private double totalCarbohydrates;
 }

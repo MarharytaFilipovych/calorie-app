@@ -1,47 +1,32 @@
 package com.margosha.kse.calories.business.mapper;
 
 import com.margosha.kse.calories.data.entity.Product;
-import com.margosha.kse.calories.data.enums.MeasurementUnit;
 import com.margosha.kse.calories.business.dto.ProductDto;
+import com.margosha.kse.calories.presentation.enums.MeasurementUnit;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-public class ProductMapper {
+@Mapper(componentModel = "spring")
+public interface ProductMapper {
+    ProductDto toDto(Product product);
 
-    public static Product toEntity(ProductDto productDto){
-        if(productDto == null)return null;
-        Product product =  new Product();
-        product.setName(productDto.getName());
-        product.setBarcode(productDto.getBarcode());
-        product.setProteins(productDto.getProteins());
-        product.setFats(productDto.getFats());
-        product.setCarbohydrates(productDto.getCarbohydrates());
-        product.setWater(productDto.getWater());
-        product.setSalt(productDto.getSalt());
-        product.setSugar(productDto.getSugar());
-        product.setFiber(productDto.getFiber());
-        product.setAlcohol(productDto.getAlcohol());
-        product.setDescription(productDto.getDescription());
-        product.setCalories(productDto.getCalories());
-        product.setMeasurementUnit(MeasurementUnit.valueOf(productDto.getMeasurementUnit().name()));
-        return product;
+    @Mapping(target = "calories", expression = "java(calculateCalories(productDto))")
+    Product toEntity(ProductDto productDto);
+
+    default int calculateCalories(ProductDto dto){
+        if (dto.getCalories() != null) return dto.getCalories();
+        double calories = (dto.getProteins() * 4) +
+                (dto.getFats() * 9) +
+                (dto.getCarbohydrates() * 4) +
+                (dto.getAlcohol() * 7);
+        return (int) Math.round(calories);
     }
 
-    public static ProductDto toDto(Product product) {
-        if(product == null) return null;
-        ProductDto productDto = new ProductDto();
-        productDto.setId(product.getId());
-        productDto.setName(product.getName());
-        productDto.setBarcode(product.getBarcode());
-        productDto.setProteins(product.getProteins());
-        productDto.setFats(product.getFats());
-        productDto.setCarbohydrates(product.getCarbohydrates());
-        productDto.setWater(product.getWater());
-        productDto.setSalt(product.getSalt());
-        productDto.setSugar(product.getSugar());
-        productDto.setFiber(product.getFiber());
-        productDto.setAlcohol(product.getAlcohol());
-        productDto.setDescription(product.getDescription());
-        productDto.setCalories(product.getCalories());
-        productDto.setMeasurementUnit(com.margosha.kse.calories.presentation.enums.MeasurementUnit.valueOf(product.getMeasurementUnit().name()));
-        return productDto;
+    default MeasurementUnit map(com.margosha.kse.calories.data.enums.MeasurementUnit measurementUnit) {
+        return measurementUnit == null ? null : MeasurementUnit.valueOf(measurementUnit.name());
+    }
+
+    default com.margosha.kse.calories.data.enums.MeasurementUnit map(MeasurementUnit measurementUnit) {
+        return measurementUnit == null ? null : com.margosha.kse.calories.data.enums.MeasurementUnit.valueOf(measurementUnit.name());
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -28,6 +29,13 @@ public class GlobalExceptionController{
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(EntityNotFoundException e){
-        return new ResponseEntity<>(new ErrorResponse("Entity with id " + e.getMessage() + " was not found!"),HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(
+                new ErrorResponse(e.getMessage() == null? "Entity with id " + e.getMessage() + " was not found!": e.getMessage()),
+                HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({IllegalArgumentException.class, AccessDeniedException.class})
+    public ResponseEntity<ErrorResponse> handleErrorResponses(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }
 }

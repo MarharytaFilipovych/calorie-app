@@ -9,14 +9,14 @@ import jakarta.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 public class RecordRequestDto {
     @NotNull(message = "Products list is required")
     @NotEmpty(message = "Products list cannot be empty")
     @Valid
-    private List<ProductRecordInRequestDto> products;
+    private Set<ProductRecordInRequestDto> productRecords;
 
     @NotNull(message = "Meal type property is obligatory!")
     @CorrectEnum(enumClass = MealType.class)

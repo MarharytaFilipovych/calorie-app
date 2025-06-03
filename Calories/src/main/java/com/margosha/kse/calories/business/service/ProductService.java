@@ -16,9 +16,11 @@ import java.util.UUID;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
+        this.productMapper = productMapper;
     }
 
     public Page<ProductDto> getAll(String name, int limit, int offset){
@@ -26,22 +28,24 @@ public class ProductService {
         Page<Product> productPage;
         if(name == null || name.isBlank())productPage = productRepository.findAll(pageable);
         else productPage =  productRepository.findProductByNameContainingIgnoreCase(name, pageable);
-        return productPage.map(ProductMapper::toDto);
+        return productPage.map(productMapper::toDto);
     }
 
     public UUID create(ProductDto dto){
-        Product product = productRepository.save(ProductMapper.toEntity(dto));
+        if(dto.getBarcode() != null && productRepository.findByBarcode(dto.getBarcode()))
+            throw new IllegalArgumentException("Product with a barcode " + dto.getBarcode() + " already exits!");
+        Product product = productRepository.save(productMapper.toEntity(dto));
         return product.getId();
     }
 
     public ProductDto getById(UUID id){
-        return productRepository.findById(id).map(ProductMapper::toDto)
+        return productRepository.findById(id).map(productMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException(id.toString()));
     }
 
-    public void uodate(ProductDto dto, UUID id){
+    public void updateProduct(ProductDto dto, UUID id){
         if (!productRepository.existsById(id)) throw new EntityNotFoundException(id.toString());
-        Product updatedProduct = ProductMapper.toEntity(dto);
+        Product updatedProduct = productMapper.toEntity(dto);
         updatedProduct.setId(id);
         productRepository.save(updatedProduct);
     }

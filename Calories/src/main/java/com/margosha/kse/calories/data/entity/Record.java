@@ -31,8 +31,8 @@ public class Record {
     private User user;
 
     @OneToMany(mappedBy = "record",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
             orphanRemoval = true,
             targetEntity = ProductRecord.class)
-    private Set<ProductRecord> recordProducts = new HashSet<>();
+    private Set<ProductRecord> productRecords = new HashSet<>();
 }

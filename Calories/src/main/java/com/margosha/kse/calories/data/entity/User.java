@@ -64,7 +64,7 @@ public class User {
 
     @OneToMany(
             mappedBy = "user",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
             targetEntity = Record.class,
             orphanRemoval = true)
     private Set<Record> records = new HashSet<>();
