@@ -1,4 +1,4 @@
-package com.margosha.kse.calories.business.service.dto;
+package com.margosha.kse.calories.business.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.margosha.kse.calories.presentation.enums.ActivityLevel;

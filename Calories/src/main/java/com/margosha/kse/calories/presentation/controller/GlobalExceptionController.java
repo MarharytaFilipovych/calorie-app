@@ -28,6 +28,6 @@ public class GlobalExceptionController{
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(EntityNotFoundException e){
-        return new ResponseEntity<>(new ErrorResponse(e.getMessage()),HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new ErrorResponse("Entity with id " + e.getMessage() + " was not found!"),HttpStatus.NOT_FOUND);
     }
 }

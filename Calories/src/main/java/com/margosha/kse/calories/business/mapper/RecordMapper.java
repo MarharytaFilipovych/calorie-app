@@ -1,9 +1,9 @@
-package com.margosha.kse.calories.business.service.dto.mapper;
+package com.margosha.kse.calories.business.mapper;
 
+import com.margosha.kse.calories.business.dto.RecordRequestDto;
 import com.margosha.kse.calories.data.enums.MealType;
-import com.margosha.kse.calories.business.service.dto.RecordRequestDto;
 import com.margosha.kse.calories.data.entity.Record;
-import com.margosha.kse.calories.business.service.dto.RecordResponseDto;
+import com.margosha.kse.calories.business.dto.RecordResponseDto;
 
 import java.util.UUID;
 

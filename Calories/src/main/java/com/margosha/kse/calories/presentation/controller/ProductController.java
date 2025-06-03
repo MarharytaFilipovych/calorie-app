@@ -1,7 +1,7 @@
 package com.margosha.kse.calories.presentation.controller;
 
 import com.margosha.kse.calories.business.service.ProductService;
-import com.margosha.kse.calories.business.service.dto.ProductDto;
+import com.margosha.kse.calories.business.dto.ProductDto;
 import com.margosha.kse.calories.presentation.model.Meta;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -38,7 +38,7 @@ public class ProductController {
             @RequestParam(defaultValue = "1")
             @Min(value = 1, message = "Offset must be at least 1")
             Integer offset) {
-        Page<ProductDto> result = productService.getProducts(name, limit, offset);
+        Page<ProductDto> result = productService.getAll(name, limit, offset);
         return ResponseEntity.ok(Map.of(
                 "meta" , new Meta(offset, result.getTotalElements(), limit, result.getTotalPages()),
                 "products", result.getContent()
@@ -47,24 +47,24 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<Map<String, UUID>> createProduct(@Valid @RequestBody ProductDto productDto){
-        UUID id = productService.createProduct(productDto);
+        UUID id = productService.create(productDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", id));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable UUID id) {
-        ProductDto dto = productService.getProductById(id);
+        ProductDto dto = productService.getById(id);
         return ResponseEntity.ok(dto);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateProduct(@Valid @RequestBody ProductDto productDto, @PathVariable UUID id ){
-        productService.updateProduct(productDto, id);
+        productService.uodate(productDto, id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable UUID id ){
-        productService.deleteProduct(id);
+        productService.delete(id);
         return ResponseEntity.noContent().build();
     }}

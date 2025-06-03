@@ -1,7 +1,7 @@
 package com.margosha.kse.calories.business.service;
 
-import com.margosha.kse.calories.business.service.dto.ProductDto;
-import com.margosha.kse.calories.business.service.dto.mapper.ProductMapper;
+import com.margosha.kse.calories.business.dto.ProductDto;
+import com.margosha.kse.calories.business.mapper.ProductMapper;
 import com.margosha.kse.calories.data.entity.Product;
 import com.margosha.kse.calories.data.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,7 +21,7 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public Page<ProductDto> getProducts(String name, int limit, int offset){
+    public Page<ProductDto> getAll(String name, int limit, int offset){
         Pageable pageable = PageRequest.of(offset - 1, limit);
         Page<Product> productPage;
         if(name == null || name.isBlank())productPage = productRepository.findAll(pageable);
@@ -29,24 +29,24 @@ public class ProductService {
         return productPage.map(ProductMapper::toDto);
     }
 
-    public UUID createProduct(ProductDto dto){
+    public UUID create(ProductDto dto){
         Product product = productRepository.save(ProductMapper.toEntity(dto));
         return product.getId();
     }
 
-    public ProductDto getProductById(UUID id){
+    public ProductDto getById(UUID id){
         return productRepository.findById(id).map(ProductMapper::toDto)
-                .orElseThrow(() -> new EntityNotFoundException("Product with id" + id + "was not found"));
+                .orElseThrow(() -> new EntityNotFoundException(id.toString()));
     }
 
-    public void updateProduct(ProductDto dto, UUID id){
-        if (!productRepository.existsById(id)) throw new EntityNotFoundException("Product with id" + id + "was not found");
+    public void uodate(ProductDto dto, UUID id){
+        if (!productRepository.existsById(id)) throw new EntityNotFoundException(id.toString());
         Product updatedProduct = ProductMapper.toEntity(dto);
         updatedProduct.setId(id);
         productRepository.save(updatedProduct);
     }
 
-    public void deleteProduct(UUID id){
+    public void delete(UUID id){
         productRepository.deleteById(id);
     }
 }

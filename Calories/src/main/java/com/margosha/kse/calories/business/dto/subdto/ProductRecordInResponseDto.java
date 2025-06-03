@@ -1,6 +1,6 @@
-package com.margosha.kse.calories.business.service.dto.subdto;
+package com.margosha.kse.calories.business.dto.subdto;
 
-import com.margosha.kse.calories.business.service.dto.ProductDto;
+import com.margosha.kse.calories.business.dto.ProductDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

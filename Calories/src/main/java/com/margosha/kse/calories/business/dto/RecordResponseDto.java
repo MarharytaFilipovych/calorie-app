@@ -1,7 +1,7 @@
-package com.margosha.kse.calories.business.service.dto;
+package com.margosha.kse.calories.business.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.margosha.kse.calories.business.service.dto.subdto.ProductRecordInResponseDto;
+import com.margosha.kse.calories.business.dto.subdto.ProductRecordInResponseDto;
 import com.margosha.kse.calories.presentation.enums.MealType;
 import lombok.Data;
 

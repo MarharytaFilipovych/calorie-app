@@ -1,4 +1,4 @@
-package com.margosha.kse.calories.business.service.dto.subdto;
+package com.margosha.kse.calories.business.dto.subdto;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;

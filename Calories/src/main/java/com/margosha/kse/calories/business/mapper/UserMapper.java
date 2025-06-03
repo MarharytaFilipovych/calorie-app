@@ -1,7 +1,7 @@
-package com.margosha.kse.calories.business.service.dto.mapper;
+package com.margosha.kse.calories.business.mapper;
 
 import com.margosha.kse.calories.data.entity.User;
-import com.margosha.kse.calories.business.service.dto.UserDto;
+import com.margosha.kse.calories.business.dto.UserDto;
 import com.margosha.kse.calories.presentation.enums.ActivityLevel;
 import com.margosha.kse.calories.presentation.enums.Gender;
 import com.margosha.kse.calories.presentation.enums.Goal;

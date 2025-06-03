@@ -1,8 +1,8 @@
-package com.margosha.kse.calories.business.service.dto.mapper;
+package com.margosha.kse.calories.business.mapper;
 
 import com.margosha.kse.calories.data.entity.Product;
 import com.margosha.kse.calories.data.enums.MeasurementUnit;
-import com.margosha.kse.calories.business.service.dto.ProductDto;
+import com.margosha.kse.calories.business.dto.ProductDto;
 
 public class ProductMapper {
 
