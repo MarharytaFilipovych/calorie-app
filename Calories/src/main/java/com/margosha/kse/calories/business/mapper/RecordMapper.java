@@ -30,37 +30,6 @@ public class RecordMapper {
                         p.getQuantity()
                 )).collect(Collectors.toSet());
         dto.setProducts(products);
-        calculateRecordTotals(dto);
         return dto;
-    }
-
-    public Record toEntity(RecordRequestDto dto){
-        Record record = new Record();
-        record.setMealType(MealType.valueOf(dto.getMealType().name()));
-        return record;
-    }
-
-    private void calculateRecordTotals(RecordResponseDto dto){
-        int totalCalories = 0;
-        double totalProteins = 0;
-        double totalFats = 0;
-        double totalCarbs = 0;
-        double totalQuantity = 0;
-
-        for (ProductRecordInResponseDto productRecord : dto.getProducts()) {
-            double quantity = productRecord.getQuantity();
-            double multiplier = quantity / 100.0;
-            ProductDto product = productRecord.getProduct();
-            totalCalories += (int) Math.round(product.getCalories() * multiplier);
-            totalProteins += product.getProteins() * multiplier;
-            totalFats += product.getFats() * multiplier;
-            totalCarbs += product.getCarbohydrates() * multiplier;
-            totalQuantity += quantity;
-        }
-        dto.setCaloriesConsumed(totalCalories);
-        dto.setTotalProteins(Math.round(totalProteins * 100.0) / 100.0);
-        dto.setTotalFats(Math.round(totalFats * 100.0) / 100.0);
-        dto.setTotalCarbohydrates(Math.round(totalCarbs * 100.0) / 100.0);
-        dto.setTotalQuantity(totalQuantity);
     }
 }

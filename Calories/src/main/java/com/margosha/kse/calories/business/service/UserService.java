@@ -1,8 +1,10 @@
 package com.margosha.kse.calories.business.service;
 
+import com.margosha.kse.calories.business.dto.ProductDto;
 import com.margosha.kse.calories.business.dto.RecordRequestDto;
 import com.margosha.kse.calories.business.dto.RecordResponseDto;
 import com.margosha.kse.calories.business.dto.subdto.ProductRecordInRequestDto;
+import com.margosha.kse.calories.business.dto.subdto.ProductRecordInResponseDto;
 import com.margosha.kse.calories.business.mapper.RecordMapper;
 import com.margosha.kse.calories.business.mapper.UserMapper;
 import com.margosha.kse.calories.data.entity.Product;
@@ -27,6 +29,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class UserService {
@@ -92,22 +97,21 @@ public class UserService {
         else uuidPage = recordRepository.findIdsByUserId(id, pageable);
         if(!uuidPage.hasContent())return Page.empty();
         List<Record> records = recordRepository.findAllByIdsWithProducts(uuidPage.getContent());
-        List<RecordResponseDto> recordResponseDtos = records.stream().map(recordMapper::toDto).toList();
-        return new PageImpl<>(recordResponseDtos, pageable, uuidPage.getTotalPages());
+        List<RecordResponseDto> recordResponseDtos = records.stream()
+                .map(recordMapper::toDto)
+                .peek(this::calculateRecordTotals)
+                .toList();
+        return new PageImpl<>(recordResponseDtos, pageable, uuidPage.getTotalElements());
     }
 
     @Transactional
     public void updateRecord(UUID userId, UUID id, RecordRequestDto dto){
-        if(!recordRepository.existsByIdAndUser_Id(id, userId))throw new EntityNotFoundException(id.toString());
-        Record record = recordRepository.findByIdWithProducts(id);
+        Record record = recordRepository.findByIdAndUser_Id(id, userId).orElseThrow(()-> new EntityNotFoundException(id.toString()));
         record.setMealType(MealType.valueOf(dto.getMealType().name()));
 
-        Set<ProductRecord> productRecords = new HashSet<>();
-        dto.getProductRecords().forEach(pr -> {
-            ProductRecord productRecord = createProductRecord(record, pr);
-            productRecords.add(productRecord);
-        });
+        Map<UUID, Product> existingProducts = getExistingProducts(dto);
 
+        Set<ProductRecord> productRecords = getProductRecords(record, dto, existingProducts);
         record.getProductRecords().clear();
         record.setProductRecords(productRecords);
         recordRepository.save(record);
@@ -120,32 +124,55 @@ public class UserService {
     public RecordResponseDto getConsumption(UUID userId, UUID id){
         if(!recordRepository.existsByIdAndUser_Id(id, userId))throw new EntityNotFoundException(id.toString());
         Record record = recordRepository.findByIdWithProducts(id);
-        return  recordMapper.toDto(record);
+        RecordResponseDto dto = recordMapper.toDto(record);
+        calculateRecordTotals(dto);
+        return dto;
     }
 
     @Transactional
     public UUID createRecord(UUID userId, RecordRequestDto dto){
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException(userId.toString()));
-        Record record = recordMapper.toEntity(dto);
+        Map<UUID, Product> existingProducts = getExistingProducts(dto);
+        Record record = new Record();
+        record.setMealType(MealType.valueOf(dto.getMealType().name()));
         record.setUser(user);
-        Set<ProductRecord> productRecords = new HashSet<>();
-        dto.getProductRecords().forEach(pr -> {
-            ProductRecord productRecord = createProductRecord(record, pr);
-            productRecords.add(productRecord);
-        });
+        Set<ProductRecord> productRecords = getProductRecords(record, dto, existingProducts);
         record.setProductRecords(productRecords);
         Record savedRecord = recordRepository.save(record);
         return savedRecord.getId();
     }
 
-    private ProductRecord createProductRecord(Record record, ProductRecordInRequestDto pr){
-        Product product = productRepository.findById(pr.getProductId())
-                .orElseThrow(() -> new EntityNotFoundException("The passed product with id " + pr.getProductId().toString() + " was not found!"));
-        ProductRecord productRecord = new ProductRecord();
-        productRecord.setProduct(product);
-        productRecord.setQuantity(pr.getQuantity());
-        productRecord.setRecord(record);
-        return productRecord;
+    private void validateProductsExist(Set<UUID> requestedIds, Map<UUID, Product> existingProducts) {
+        List<UUID> missing = requestedIds.stream()
+                .filter(id -> !existingProducts.containsKey(id))
+                .toList();
+
+        if (!missing.isEmpty()) {
+            String joinedIds = missing.stream()
+                    .map(UUID::toString)
+                    .collect(Collectors.joining(", "));
+            throw new EntityNotFoundException("Some of passed product ids were not found: " + joinedIds);
+        }
+    }
+
+    private Map<UUID, Product> getExistingProducts(RecordRequestDto dto){
+        Set<UUID> requestedProductIds = dto.getProductRecords().stream().map(ProductRecordInRequestDto::getProductId).collect(Collectors.toSet());
+        Map<UUID, Product> existingProducts = productRepository.findAllById(requestedProductIds).stream()
+                .collect(Collectors.toMap(Product::getId, Function.identity()));
+        validateProductsExist(requestedProductIds, existingProducts);
+        return existingProducts;
+    }
+
+    private Set<ProductRecord> getProductRecords(Record record, RecordRequestDto dto, Map<UUID, Product> existingProducts){
+        Set<ProductRecord> productRecords = new HashSet<>();
+        dto.getProductRecords().forEach(pr -> {
+            ProductRecord productRecord = new ProductRecord();
+            productRecord.setProduct(existingProducts.get(pr.getProductId()));
+            productRecord.setQuantity(pr.getQuantity());
+            productRecord.setRecord(record);
+            productRecords.add(productRecord);
+        });
+        return productRecords;
     }
 
     private double getDailyCalories(User user, int age, boolean male) {
@@ -163,5 +190,29 @@ public class UserService {
             case GAIN -> dailyCalories += 500;
         }
         return dailyCalories;
+    }
+
+    private void calculateRecordTotals(RecordResponseDto dto){
+        int totalCalories = 0;
+        double totalProteins = 0;
+        double totalFats = 0;
+        double totalCarbs = 0;
+        double totalQuantity = 0;
+
+        for (ProductRecordInResponseDto productRecord : dto.getProducts()) {
+            double quantity = productRecord.getQuantity();
+            double multiplier = quantity / 100.0;
+            ProductDto product = productRecord.getProduct();
+            totalCalories += (int) Math.round(product.getCalories() * multiplier);
+            totalProteins += product.getProteins() * multiplier;
+            totalFats += product.getFats() * multiplier;
+            totalCarbs += product.getCarbohydrates() * multiplier;
+            totalQuantity += quantity;
+        }
+        dto.setCaloriesConsumed(totalCalories);
+        dto.setTotalProteins(Math.round(totalProteins * 100.0) / 100.0);
+        dto.setTotalFats(Math.round(totalFats * 100.0) / 100.0);
+        dto.setTotalCarbohydrates(Math.round(totalCarbs * 100.0) / 100.0);
+        dto.setTotalQuantity(totalQuantity);
     }
 }
