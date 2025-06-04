@@ -1,9 +1,6 @@
 package com.margosha.kse.calories.business.mapper;
 
-import com.margosha.kse.calories.business.dto.ProductDto;
-import com.margosha.kse.calories.business.dto.RecordRequestDto;
 import com.margosha.kse.calories.business.dto.subdto.ProductRecordInResponseDto;
-import com.margosha.kse.calories.data.enums.MealType;
 import com.margosha.kse.calories.data.entity.Record;
 import com.margosha.kse.calories.business.dto.RecordResponseDto;
 import org.springframework.stereotype.Component;

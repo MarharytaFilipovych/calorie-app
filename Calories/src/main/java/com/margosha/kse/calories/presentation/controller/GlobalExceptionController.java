@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import java.nio.file.AccessDeniedException;
 import java.util.stream.Collectors;
 
@@ -18,7 +17,7 @@ public class GlobalExceptionController{
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException e){
         String message = e.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .collect(Collectors.joining(".\n"));
+                .collect(Collectors.joining("|\n"));
         return ResponseEntity.badRequest().body(new ErrorResponse(message));
     }
 
@@ -29,9 +28,10 @@ public class GlobalExceptionController{
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(EntityNotFoundException e){
-        return new ResponseEntity<>(
-                new ErrorResponse(e.getMessage() == null? "Entity with id " + e.getMessage() + " was not found!": e.getMessage()),
-                HttpStatus.NOT_FOUND);
+        String message = e.getMessage();
+        if(message == null)message = "Not found!";
+        else if(message.trim().split("\\s+").length == 1)message = "Entity with id " + e.getMessage() + " was not found!";
+        return new ResponseEntity<>(new ErrorResponse(message), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({IllegalArgumentException.class, AccessDeniedException.class})

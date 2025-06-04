@@ -11,7 +11,6 @@ import org.hibernate.validator.constraints.UUID;
 public class ProductRecordInRequestDto {
 
     @NotNull(message = "Product id is obligatory!")
-    @UUID(message = "Product id must be a correct uuid!")
     private java.util.UUID productId;
 
     @NotNull(message = "Quantity is obligatory!")

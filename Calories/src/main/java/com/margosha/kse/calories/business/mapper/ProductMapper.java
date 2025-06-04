@@ -23,10 +23,10 @@ public interface ProductMapper {
     }
 
     default MeasurementUnit map(com.margosha.kse.calories.data.enums.MeasurementUnit measurementUnit) {
-        return measurementUnit == null ? null : MeasurementUnit.valueOf(measurementUnit.name());
+        return MeasurementUnit.valueOf(measurementUnit.name());
     }
 
     default com.margosha.kse.calories.data.enums.MeasurementUnit map(MeasurementUnit measurementUnit) {
-        return measurementUnit == null ? null : com.margosha.kse.calories.data.enums.MeasurementUnit.valueOf(measurementUnit.name());
+        return com.margosha.kse.calories.data.enums.MeasurementUnit.valueOf(measurementUnit.name());
     }
 }

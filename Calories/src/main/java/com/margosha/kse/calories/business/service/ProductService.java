@@ -32,7 +32,7 @@ public class ProductService {
     }
 
     public UUID create(ProductDto dto){
-        if(dto.getBarcode() != null && productRepository.findByBarcode(dto.getBarcode()))
+        if(dto.getBarcode() != null && productRepository.existsByBarcode(dto.getBarcode()))
             throw new IllegalArgumentException("Product with a barcode " + dto.getBarcode() + " already exits!");
         Product product = productRepository.save(productMapper.toEntity(dto));
         return product.getId();

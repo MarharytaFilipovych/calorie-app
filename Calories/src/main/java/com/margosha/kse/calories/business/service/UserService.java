@@ -24,14 +24,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class UserService {
@@ -54,7 +52,7 @@ public class UserService {
     }
 
     public UUID createUser(UserDto dto){
-        if(userRepository.findByEmail(dto.getEmail()))throw new IllegalArgumentException("User with email " + dto.getEmail() + " already exits!");
+        if(userRepository.existsByEmail(dto.getEmail()))throw new IllegalArgumentException("User with email " + dto.getEmail() + " already exits!");
         User user = userRepository.save(userMapper.toEntity(dto));
         return user.getId();
     }
@@ -62,6 +60,11 @@ public class UserService {
     public UserDto getUserById(UUID id){
         return userRepository.findById(id).map(userMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException(id.toString()));
+    }
+
+    public UserDto getUserByEmail(String email){
+        return userRepository.findByEmail(email).map(userMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("User with email " + email + " was not found!"));
     }
 
     public void updateUser(UserDto dto, UUID id){

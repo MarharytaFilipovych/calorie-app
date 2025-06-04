@@ -14,26 +14,26 @@ public interface UserMapper {
     User toEntity(UserDto userDto);
 
     default Gender map(com.margosha.kse.calories.data.enums.Gender entityGender) {
-        return entityGender == null ? null : Gender.valueOf(entityGender.name());
+        return Gender.valueOf(entityGender.name());
     }
 
     default com.margosha.kse.calories.data.enums.Gender map(Gender dtoGender) {
-        return dtoGender == null ? null : com.margosha.kse.calories.data.enums.Gender.valueOf(dtoGender.name());
+        return com.margosha.kse.calories.data.enums.Gender.valueOf(dtoGender.name());
     }
 
     default ActivityLevel map(com.margosha.kse.calories.data.enums.ActivityLevel entityActivityLevel) {
-        return entityActivityLevel == null ? null : ActivityLevel.valueOf(entityActivityLevel.name());
+        return ActivityLevel.valueOf(entityActivityLevel.name());
     }
 
     default com.margosha.kse.calories.data.enums.ActivityLevel map(ActivityLevel dtoActivityLevel) {
-        return dtoActivityLevel == null ? null : com.margosha.kse.calories.data.enums.ActivityLevel.valueOf(dtoActivityLevel.name());
+        return com.margosha.kse.calories.data.enums.ActivityLevel.valueOf(dtoActivityLevel.name());
     }
 
     default Goal map(com.margosha.kse.calories.data.enums.Goal entityGoal) {
-        return entityGoal == null ? null : Goal.valueOf(entityGoal.name());
+        return Goal.valueOf(entityGoal.name());
     }
 
     default com.margosha.kse.calories.data.enums.Goal map(Goal dtoGoal) {
-        return dtoGoal == null ? null : com.margosha.kse.calories.data.enums.Goal.valueOf(dtoGoal.name());
+        return com.margosha.kse.calories.data.enums.Goal.valueOf(dtoGoal.name());
     }
 }
