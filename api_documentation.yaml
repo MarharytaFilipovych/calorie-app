@@ -168,6 +168,21 @@ paths:
         '404':
           $ref: '#/components/responses/404NotFound'
 
+  /users/email/{email}:
+    get:
+      description: observe the details of a particular user by their email
+      parameters: 
+        - $ref: '#/components/parameters/Email'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          $ref: '#/components/responses/404NotFound'
+
   /users/{id}/daily-target:
     get:
       description: calculate daily calorie target for this user
@@ -591,6 +606,15 @@ components:
       schema:
         type: string
         format: uuid
+    
+    Email:
+      name: email
+      in: path
+      required: true
+      description: unique user email
+      schema:
+        type: string
+        format: email
     
     UserId:
       name: userId
