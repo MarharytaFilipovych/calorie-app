@@ -14,6 +14,7 @@ public interface ProductMapper {
     @Mapping(target = "calories", expression = "java(calculateCalories(productDto))")
     Product toEntity(ProductDto productDto);
 
+    // Cloud ai generated
     default int calculateCalories(ProductDto dto){
         if (dto.getCalories() != null) return dto.getCalories();
         double calories = (dto.getProteins() * 4) +

@@ -13,6 +13,7 @@ import com.margosha.kse.calories.data.entity.User;
 import com.margosha.kse.calories.data.entity.Record;
 import com.margosha.kse.calories.data.enums.Gender;
 import com.margosha.kse.calories.data.enums.MealType;
+import com.margosha.kse.calories.data.repository.ProductRecordRepository;
 import com.margosha.kse.calories.data.repository.ProductRepository;
 import com.margosha.kse.calories.data.repository.RecordRepository;
 import com.margosha.kse.calories.data.repository.UserRepository;
@@ -39,7 +40,7 @@ public class UserService {
     private final ProductRepository productRepository;
     private final RecordMapper recordMapper;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper, RecordRepository recordRepository, ProductRepository productRepository, RecordMapper recordMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, RecordRepository recordRepository, ProductRepository productRepository, RecordMapper recordMapper, ProductRecordRepository productRecordRepository) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.recordRepository = recordRepository;
@@ -123,24 +124,10 @@ public class UserService {
         recordRepository.deleteByIdAndUser_Id(id, userId);
     }
 
-    // Temporary debug in your UserService.getConsumption method
     public RecordResponseDto getConsumption(UUID userId, UUID id){
         Record record = recordRepository.findByIdAndUser_Id(id, userId)
                 .orElseThrow(() -> new EntityNotFoundException(id.toString()));
-
-        // Debug: Check the entity values
-        record.getProductRecords().forEach(pr -> {
-            Product product = pr.getProduct();
-            System.out.println("Product: " + product.getName() + ", Archived: " + product.isArchived());
-        });
-
         RecordResponseDto dto = recordMapper.toDto(record);
-
-        // Debug: Check the DTO values
-        dto.getProducts().forEach(pr -> {
-            System.out.println("DTO Product: " + pr.getProduct().getName() + ", Archived: " + pr.getProduct().isArchived());
-        });
-
         calculateRecordTotals(dto);
         return dto;
     }
@@ -210,7 +197,7 @@ public class UserService {
         }
         return dailyCalories;
     }
-
+    // Cloud ai generated
     private void calculateRecordTotals(RecordResponseDto dto){
         int totalCalories = 0;
         double totalProteins = 0;

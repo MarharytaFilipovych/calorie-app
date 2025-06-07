@@ -77,7 +77,7 @@ public class Product {
     @Column(nullable = false)
     private boolean archived = false;
 
-    @OneToMany(mappedBy = "product", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "product", cascade = CascadeType.PERSIST)
     @JsonIgnore
     private Set<ProductRecord> productRecords = new HashSet<>();
 }
