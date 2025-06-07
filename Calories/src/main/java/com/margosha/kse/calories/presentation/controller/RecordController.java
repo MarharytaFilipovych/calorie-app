@@ -2,6 +2,7 @@ package com.margosha.kse.calories.presentation.controller;
 
 import com.margosha.kse.calories.business.dto.RecordRequestDto;
 import com.margosha.kse.calories.business.dto.RecordResponseDto;
+import com.margosha.kse.calories.business.service.RecordService;
 import com.margosha.kse.calories.business.service.UserService;
 import com.margosha.kse.calories.presentation.model.Meta;
 import com.margosha.kse.calories.presentation.model.Pagination;
@@ -22,12 +23,12 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/users/{userId}/records")
 @Tag(name = "Consumption records")
-public class ConsumptionController {
+public class RecordController {
 
-    private final UserService userService;
+    private final RecordService recordService;
 
-    public ConsumptionController(UserService userService) {
-        this.userService = userService;
+    public RecordController(RecordService recordService) {
+        this.recordService = recordService;
     }
 
     @GetMapping()
@@ -40,7 +41,7 @@ public class ConsumptionController {
             @RequestParam(required = false)
             @PastOrPresent(message = "This date cannot point to the future!")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date){
-        Page<RecordResponseDto> result = userService.getRecords(userId, pagination.getLimit(), pagination.getPage(), date);
+        Page<RecordResponseDto> result = recordService.getRecords(userId, pagination.getLimit(), pagination.getPage(), date);
         return ResponseEntity.ok(Map.of(
                 "meta" , new Meta(result),
                 "records", result.getContent()
@@ -53,7 +54,7 @@ public class ConsumptionController {
             @PathVariable UUID userId,
             @Parameter(description = "Record unique identifier")
             @PathVariable UUID id){
-        return ResponseEntity.ok(Map.of("record", userService.getConsumption(userId, id)));
+        return ResponseEntity.ok(Map.of("record", recordService.getConsumption(userId, id)));
     }
 
     @PostMapping()
@@ -62,7 +63,7 @@ public class ConsumptionController {
             @PathVariable UUID userId,
             @Parameter(description = "Consumption record with products and quantities")
             @Valid @RequestBody RecordRequestDto recordRequestDto){
-        UUID recordId = userService.createRecord(userId, recordRequestDto);
+        UUID recordId = recordService.createRecord(userId, recordRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", recordId));
     }
 
@@ -74,7 +75,7 @@ public class ConsumptionController {
             @PathVariable UUID id,
             @Parameter(description = "Updated consumption record data")
             @Valid @RequestBody RecordRequestDto recordRequestDto){
-        userService.updateRecord(userId, id, recordRequestDto);
+        recordService.updateRecord(userId, id, recordRequestDto);
         return ResponseEntity.noContent().build();
     }
 
@@ -84,7 +85,7 @@ public class ConsumptionController {
             @PathVariable UUID userId,
             @Parameter(description = "Record unique identifier")
             @PathVariable UUID id){
-        userService.deleteRecord(userId, id);
+        recordService.deleteRecord(userId, id);
         return ResponseEntity.noContent().build();
     }
 }
