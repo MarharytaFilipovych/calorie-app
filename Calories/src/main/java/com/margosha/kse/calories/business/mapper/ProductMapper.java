@@ -8,6 +8,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
+    @Mapping(source = "archived", target = "archived")
     ProductDto toDto(Product product);
 
     @Mapping(target = "calories", expression = "java(calculateCalories(productDto))")

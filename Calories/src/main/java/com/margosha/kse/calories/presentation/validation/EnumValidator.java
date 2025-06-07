@@ -1,10 +1,8 @@
 package com.margosha.kse.calories.presentation.validation;
 
+import com.margosha.kse.calories.presentation.annotations.CorrectEnum;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class EnumValidator implements ConstraintValidator<CorrectEnum, Enum<?>> {
     private Class<? extends Enum<?>> enumClass;

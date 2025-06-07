@@ -2,7 +2,7 @@ package com.margosha.kse.calories.business.dto;
 
 import com.margosha.kse.calories.business.dto.subdto.ProductRecordInRequestDto;
 import com.margosha.kse.calories.presentation.enums.MealType;
-import com.margosha.kse.calories.presentation.validation.CorrectEnum;
+import com.margosha.kse.calories.presentation.annotations.CorrectEnum;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

@@ -2,17 +2,23 @@ package com.margosha.kse.calories.data.entity;
 
 import com.margosha.kse.calories.data.enums.MealType;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
-@Data
 @Table(name = "records")
 @EntityListeners(AuditingEntityListener.class)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(exclude = {"productRecords", "user"})
+@ToString(exclude = {"productRecords", "user"})
 public class Record {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -29,6 +35,10 @@ public class Record {
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="user_id", nullable = false)
     private User user;
+
+    @LastModifiedDate
+    @Column(name = "updated_at", insertable = false)
+    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "record",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE},

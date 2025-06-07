@@ -19,7 +19,7 @@ public class RecordMapper {
     public RecordResponseDto toDto(Record record) {
         RecordResponseDto dto = new RecordResponseDto();
         dto.setId(record.getId());
-        dto.setMealType(com.margosha.kse.calories.presentation.enums.MealType.valueOf(dto.getMealType().name()));
+        dto.setMealType(com.margosha.kse.calories.presentation.enums.MealType.valueOf(record.getMealType().name()));
         dto.setConsumedAt(record.getConsumedAt());
         Set<ProductRecordInResponseDto> products = record.getProductRecords().stream()
                 .map(p -> new ProductRecordInResponseDto(

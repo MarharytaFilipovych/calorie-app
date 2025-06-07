@@ -4,6 +4,7 @@ import com.margosha.kse.calories.business.service.ProductService;
 import com.margosha.kse.calories.business.dto.ProductDto;
 import com.margosha.kse.calories.presentation.model.Meta;
 import com.margosha.kse.calories.presentation.model.Pagination;
+import com.margosha.kse.calories.presentation.annotations.CorrectName;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -28,25 +29,25 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping
-    public ResponseEntity<Map<String, Object>> getProducts(
-            @Parameter(description = "Search products by name (case-insensitive partial match)")
-            @RequestParam(required = false) String name,
-            @Parameter(description = "Pagination parameters")
-            @ParameterObject Pagination pagination) {
-        Page<ProductDto> result = productService.getAll(name, pagination.getLimit(), pagination.getOffset());
-        return ResponseEntity.ok(Map.of(
-                "meta" , new Meta(result),
-                "products", result.getContent()
-        ));
-    }
-
     @PostMapping
     public ResponseEntity<Map<String, UUID>> createProduct(
             @Parameter(description = "Product information including nutritional values")
             @Valid @RequestBody ProductDto productDto){
         UUID id = productService.create(productDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", id));
+    }
+
+    @GetMapping
+    public ResponseEntity<Map<String, Object>> getProducts(
+            @Parameter(description = "Search products by name (case-insensitive partial match)")
+            @RequestParam(required = false) @CorrectName(required = false) String name,
+            @Parameter(description = "Pagination parameters")
+            @ParameterObject Pagination pagination) {
+        Page<ProductDto> result = productService.getAll(name, pagination.getLimit(), pagination.getPage());
+        return ResponseEntity.ok(Map.of(
+                "meta" , new Meta(result),
+                "products", result.getContent()
+        ));
     }
 
     @GetMapping("/{id}")

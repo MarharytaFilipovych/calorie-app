@@ -1,7 +1,5 @@
 package com.margosha.kse.calories.presentation.controller;
 
-import com.margosha.kse.calories.business.dto.RecordRequestDto;
-import com.margosha.kse.calories.business.dto.RecordResponseDto;
 import com.margosha.kse.calories.business.dto.UserDto;
 import com.margosha.kse.calories.business.service.UserService;
 import com.margosha.kse.calories.presentation.model.Meta;
@@ -10,15 +8,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.PastOrPresent;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
 
@@ -37,7 +32,7 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> getUsers(
             @Parameter(description = "Pagination parameters")
             @ParameterObject Pagination pagination) {
-        Page<UserDto> result = userService.getAllUsers(pagination.getLimit(), pagination.getOffset());
+        Page<UserDto> result = userService.getAllUsers(pagination.getLimit(), pagination.getPage());
         return ResponseEntity.ok(Map.of(
                 "meta" , new Meta(result),
                 "users", result.getContent()
@@ -91,63 +86,5 @@ public class UserController {
             @Parameter(description = "User unique identifier")
             @PathVariable UUID id){
         return ResponseEntity.ok(Map.of("daily_calorie_target", userService.getDailyTarget(id)));
-    }
-
-    @GetMapping("/{id}/records")
-    public ResponseEntity<Map<String, Object>> getRecords(
-            @Parameter(description = "User unique identifier")
-            @PathVariable UUID id,
-            @Parameter(description = "Pagination parameters")
-            @ParameterObject Pagination pagination,
-            @Parameter(description = "Filter by consumption date (must be today or in the past)")
-            @RequestParam(required = false)
-            @PastOrPresent(message = "This date cannot point to the future!")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date){
-        Page<RecordResponseDto> result = userService.getRecords(id, pagination.getLimit(), pagination.getOffset(), date);
-        return ResponseEntity.ok(Map.of(
-                "meta" , new Meta(result),
-                "records", result.getContent()
-        ));
-    }
-
-    @GetMapping("/{userId}/records/{id}")
-    public ResponseEntity<Map<String, RecordResponseDto>> getConsumption(
-            @Parameter(description = "User unique identifier")
-            @PathVariable UUID userId,
-            @Parameter(description = "Record unique identifier")
-            @PathVariable UUID id){
-        return ResponseEntity.ok(Map.of("record", userService.getConsumption(userId, id)));
-    }
-
-    @PostMapping("/{id}/records")
-    public ResponseEntity<Map<String, UUID>> recordConsumption(
-            @Parameter(description = "User unique identifier")
-            @PathVariable UUID id,
-            @Parameter(description = "Consumption record with products and quantities")
-            @Valid @RequestBody RecordRequestDto recordRequestDto){
-        UUID recordId = userService.createRecord(id, recordRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", recordId));
-    }
-
-    @PutMapping("/{userId}/records/{id}")
-    public ResponseEntity<Void> updateRecord(
-            @Parameter(description = "User unique identifier")
-            @PathVariable UUID userId,
-            @Parameter(description = "Record unique identifier")
-            @PathVariable UUID id,
-            @Parameter(description = "Updated consumption record data")
-            @Valid @RequestBody RecordRequestDto recordRequestDto){
-        userService.updateRecord(userId, id, recordRequestDto);
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/{userId}/records/{id}")
-    public ResponseEntity<Void> deleteRecord(
-            @Parameter(description = "User unique identifier")
-            @PathVariable UUID userId,
-            @Parameter(description = "Record unique identifier")
-            @PathVariable UUID id){
-        userService.deleteRecord(userId, id);
-        return ResponseEntity.noContent().build();
     }
 }

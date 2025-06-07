@@ -8,7 +8,7 @@ import lombok.Data;
 public class Pagination {
     @Min(value = 1, message = "Limit must be at least 1")
     @Max(value = 100, message = "Limit cannot exceed 100")
-    private final int limit = 20;
-    @Min(value = 1, message = "Offset must be at least 1")
-    private final int offset = 1;
+    private int limit = 20;
+    @Min(value = 1, message = "Page must be at least 1")
+    private int page = 1;
 }

@@ -111,23 +111,36 @@ public class UserService {
     public void updateRecord(UUID userId, UUID id, RecordRequestDto dto){
         Record record = recordRepository.findByIdAndUser_Id(id, userId).orElseThrow(()-> new EntityNotFoundException(id.toString()));
         record.setMealType(MealType.valueOf(dto.getMealType().name()));
-
         Map<UUID, Product> existingProducts = getExistingProducts(dto);
-
-        Set<ProductRecord> productRecords = getProductRecords(record, dto, existingProducts);
-        record.getProductRecords().clear();
-        record.setProductRecords(productRecords);
+        Set<ProductRecord> productRecords = record.getProductRecords();
+        productRecords.clear();
+        populateProductRecords(record, dto, existingProducts, productRecords);
         recordRepository.save(record);
     }
 
+    @Transactional
     public void deleteRecord(UUID userId, UUID id){
         recordRepository.deleteByIdAndUser_Id(id, userId);
     }
 
+    // Temporary debug in your UserService.getConsumption method
     public RecordResponseDto getConsumption(UUID userId, UUID id){
-        if(!recordRepository.existsByIdAndUser_Id(id, userId))throw new EntityNotFoundException(id.toString());
-        Record record = recordRepository.findByIdWithProducts(id);
+        Record record = recordRepository.findByIdAndUser_Id(id, userId)
+                .orElseThrow(() -> new EntityNotFoundException(id.toString()));
+
+        // Debug: Check the entity values
+        record.getProductRecords().forEach(pr -> {
+            Product product = pr.getProduct();
+            System.out.println("Product: " + product.getName() + ", Archived: " + product.isArchived());
+        });
+
         RecordResponseDto dto = recordMapper.toDto(record);
+
+        // Debug: Check the DTO values
+        dto.getProducts().forEach(pr -> {
+            System.out.println("DTO Product: " + pr.getProduct().getName() + ", Archived: " + pr.getProduct().isArchived());
+        });
+
         calculateRecordTotals(dto);
         return dto;
     }
@@ -149,7 +162,6 @@ public class UserService {
         List<UUID> missing = requestedIds.stream()
                 .filter(id -> !existingProducts.containsKey(id))
                 .toList();
-
         if (!missing.isEmpty()) {
             String joinedIds = missing.stream()
                     .map(UUID::toString)
@@ -160,7 +172,7 @@ public class UserService {
 
     private Map<UUID, Product> getExistingProducts(RecordRequestDto dto){
         Set<UUID> requestedProductIds = dto.getProductRecords().stream().map(ProductRecordInRequestDto::getProductId).collect(Collectors.toSet());
-        Map<UUID, Product> existingProducts = productRepository.findAllById(requestedProductIds).stream()
+        Map<UUID, Product> existingProducts = productRepository.findAllByIdInAndArchivedIsFalse(requestedProductIds).stream()
                 .collect(Collectors.toMap(Product::getId, Function.identity()));
         validateProductsExist(requestedProductIds, existingProducts);
         return existingProducts;
@@ -168,6 +180,11 @@ public class UserService {
 
     private Set<ProductRecord> getProductRecords(Record record, RecordRequestDto dto, Map<UUID, Product> existingProducts){
         Set<ProductRecord> productRecords = new HashSet<>();
+       populateProductRecords(record, dto, existingProducts, productRecords);
+        return productRecords;
+    }
+
+    private void populateProductRecords(Record record, RecordRequestDto dto, Map<UUID, Product> existingProducts, Set<ProductRecord> productRecords){
         dto.getProductRecords().forEach(pr -> {
             ProductRecord productRecord = new ProductRecord();
             productRecord.setProduct(existingProducts.get(pr.getProductId()));
@@ -175,7 +192,6 @@ public class UserService {
             productRecord.setRecord(record);
             productRecords.add(productRecord);
         });
-        return productRecords;
     }
 
     private double getDailyCalories(User user, int age, boolean male) {

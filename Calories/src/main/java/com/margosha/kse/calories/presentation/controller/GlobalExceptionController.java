@@ -2,6 +2,8 @@ package com.margosha.kse.calories.presentation.controller;
 
 import com.margosha.kse.calories.presentation.model.ErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,7 +25,7 @@ public class GlobalExceptionController{
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception e){
-        return ResponseEntity.internalServerError().body(new ErrorResponse(e.getMessage()));
+        return ResponseEntity.internalServerError().body(new ErrorResponse("Ooopppss!"));
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -38,4 +40,13 @@ public class GlobalExceptionController{
     public ResponseEntity<ErrorResponse> handleErrorResponses(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {
+        String message = e.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.joining("\n"));
+        return ResponseEntity.badRequest().body(new ErrorResponse(message));
+    }
+
 }

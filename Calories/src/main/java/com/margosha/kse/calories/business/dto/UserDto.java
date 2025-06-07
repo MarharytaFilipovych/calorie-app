@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.margosha.kse.calories.presentation.enums.ActivityLevel;
 import com.margosha.kse.calories.presentation.enums.Gender;
 import com.margosha.kse.calories.presentation.enums.Goal;
-import com.margosha.kse.calories.presentation.validation.CorrectEnum;
+import com.margosha.kse.calories.presentation.annotations.CorrectEnum;
+import com.margosha.kse.calories.presentation.annotations.CorrectName;
 import jakarta.validation.constraints.*;
 
 import lombok.Data;
@@ -22,15 +23,11 @@ public class UserDto {
     @NotBlank(message = "Email is required")
     private String email;
 
-    @NotBlank(message = "First name is required")
-    @Size(min = 2, max = 100, message = "First name must be between 2 and 100 characters")
-    @Pattern(regexp = "^[\\p{L}\\s\\-.']+$", message = "Name can only contain letters, spaces, hyphens, periods, and apostrophes")
+    @CorrectName
     @JsonProperty("first_name")
     private String firstName;
 
-    @NotBlank(message = "Last name is required")
-    @Size(min = 2, max = 100, message = "Last name must be between 2 and 100 characters")
-    @Pattern(regexp = "^[\\p{L}\\s\\-.']+$", message = "Surname can only contain letters, spaces, hyphens, periods, and apostrophes")
+    @CorrectName
     @JsonProperty("last_name")
     private String lastName;
 

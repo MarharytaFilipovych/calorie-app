@@ -4,8 +4,9 @@ import com.margosha.kse.calories.data.enums.ActivityLevel;
 import com.margosha.kse.calories.data.enums.Gender;
 import com.margosha.kse.calories.data.enums.Goal;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,7 +16,12 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(exclude = {"records"})
+@ToString(exclude = {"records"})
 @EntityListeners(AuditingEntityListener.class)
 public class User {
     @Id
@@ -58,8 +64,12 @@ public class User {
     private Double targetWeight;
 
     @CreatedDate
-    @Column(name = "registered_at", nullable = false)
+    @Column(name = "registered_at", insertable = false)
     private LocalDateTime registeredAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at", updatable = false)
+    private LocalDateTime updatedAt;
 
     @OneToMany(
             mappedBy = "user",
