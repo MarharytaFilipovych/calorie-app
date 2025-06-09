@@ -8,6 +8,8 @@ import com.margosha.kse.calories.presentation.annotations.CorrectName;
 import com.margosha.kse.calories.presentation.annotations.Nutrient;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
+
 import java.util.UUID;
 
 @Data
@@ -45,6 +47,7 @@ public class ProductDto {
     @Nutrient(nutrient = "Alcohol")
     private Double alcohol;
 
+    @Length(max = 255)
     private String description;
 
     @Min(value = 0, message = "Calories cannot be negative")

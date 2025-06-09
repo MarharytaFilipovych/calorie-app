@@ -9,6 +9,7 @@ import com.margosha.kse.calories.presentation.annotations.CorrectName;
 import jakarta.validation.constraints.*;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -21,6 +22,7 @@ public class UserDto {
 
     @Email(message = "Email should be valid")
     @NotBlank(message = "Email is required")
+    @Length(max = 255)
     private String email;
 
     @CorrectName

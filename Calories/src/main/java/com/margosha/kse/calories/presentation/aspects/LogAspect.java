@@ -38,7 +38,7 @@ public class LogAspect {
     }
 
     @AfterThrowing(value = "execution(* com.margosha.kse.calories.business.service.*.*(..)))", throwing = "exception")
-    public void logException(Exception exception){
+    public void logServiceException(Exception exception){
         log.error("Service layer exception occurred: {} - {}",
                 exception.getClass().getSimpleName(),
                 exception.getMessage());
