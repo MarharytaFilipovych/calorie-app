@@ -1,5 +1,8 @@
 package com.margosha.kse.calories.config;
 
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -12,12 +15,25 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfiguration {
 
-    @Value("${rabbit.queue.name}")
-    private String queueName;
+    private final RabbitSettings settings;
+
+    public RabbitMQConfiguration(RabbitSettings settings) {
+        this.settings = settings;
+    }
+
+    @Bean
+    public DirectExchange exchange(){
+        return new DirectExchange(settings.getExchangeName(), true, false);
+    }
 
     @Bean
     public Queue queue(){
-        return new Queue(queueName, true);
+        return new Queue(settings.getQueueName(), true);
+    }
+
+    @Bean
+    public Binding binding(Queue queue, DirectExchange exchange){
+        return BindingBuilder.bind(queue).to(exchange).with(settings.getRoutingKey());
     }
 
     @Bean
@@ -29,7 +45,8 @@ public class RabbitMQConfiguration {
     public RabbitTemplate rabbitTemplate(ConnectionFactory factory, MessageConverter converter){
         RabbitTemplate template = new RabbitTemplate(factory);
         template.setMessageConverter(converter);
-        template.setRoutingKey(queueName);
+        template.setExchange(settings.getExchangeName());
+        template.setRoutingKey(settings.getRoutingKey());
         return template;
     }
 }
