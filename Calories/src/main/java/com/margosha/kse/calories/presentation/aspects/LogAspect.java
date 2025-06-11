@@ -1,5 +1,6 @@
 package com.margosha.kse.calories.presentation.aspects;
 
+import com.margosha.kse.calories.business.dto.RecordResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -49,5 +50,20 @@ public class LogAspect {
         log.error("Repository layer exception occurred: {} - {}",
                 exception.getClass().getSimpleName(),
                 exception.getMessage());
+    }
+
+    @Around("execution(com.margosha.kse.calories.business.service.RecordOutboxService.processRecord(*))")
+    public Object logEventProduction(ProceedingJoinPoint joinPoint)throws Throwable{
+        RecordResponseDto record = (RecordResponseDto) joinPoint.getArgs()[0];
+        log.info("Starting to process record event for record ID: {}", record.getId());
+        try {
+            Object result = joinPoint.proceed();
+            log.info("Successfully processed record event for record ID: {}", record.getId());
+            return result;
+        } catch (Exception e) {
+            log.error("Failed to process record event for record ID: {}, error: {}",
+                    record.getId(), e.getMessage(), e);
+            throw e;
+        }
     }
 }

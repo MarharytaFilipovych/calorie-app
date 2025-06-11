@@ -1,12 +1,8 @@
 package com.margosha.kse.calories.business.service;
 
-import com.margosha.kse.calories.business.mapper.RecordMapper;
 import com.margosha.kse.calories.business.mapper.UserMapper;
 import com.margosha.kse.calories.data.entity.User;
 import com.margosha.kse.calories.data.enums.Gender;
-import com.margosha.kse.calories.data.repository.ProductRecordRepository;
-import com.margosha.kse.calories.data.repository.ProductRepository;
-import com.margosha.kse.calories.data.repository.RecordRepository;
 import com.margosha.kse.calories.data.repository.UserRepository;
 import com.margosha.kse.calories.business.dto.UserDto;
 import jakarta.persistence.EntityNotFoundException;

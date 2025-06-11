@@ -6,12 +6,11 @@ import com.margosha.kse.calories.business.dto.RecordResponseDto;
 import com.margosha.kse.calories.business.dto.subdto.ProductRecordInRequestDto;
 import com.margosha.kse.calories.business.dto.subdto.ProductRecordInResponseDto;
 import com.margosha.kse.calories.business.mapper.RecordMapper;
-import com.margosha.kse.calories.data.entity.Product;
-import com.margosha.kse.calories.data.entity.ProductRecord;
+import com.margosha.kse.calories.data.entity.*;
 import com.margosha.kse.calories.data.entity.Record;
-import com.margosha.kse.calories.data.entity.User;
 import com.margosha.kse.calories.data.enums.MealType;
 import com.margosha.kse.calories.data.repository.ProductRepository;
+import com.margosha.kse.calories.data.repository.RecordOutboxRepository;
 import com.margosha.kse.calories.data.repository.RecordRepository;
 import com.margosha.kse.calories.data.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -33,12 +32,14 @@ public class RecordService {
     private final RecordRepository recordRepository;
     private final ProductRepository productRepository;
     private final RecordMapper recordMapper;
+    private final RecordOutboxRepository recordOutboxRepository;
 
-    public RecordService(UserRepository userRepository, RecordRepository recordRepository, ProductRepository productRepository, RecordMapper recordMapper) {
+    public RecordService(UserRepository userRepository, RecordRepository recordRepository, ProductRepository productRepository, RecordMapper recordMapper, RecordOutboxRepository recordOutboxRepository) {
         this.userRepository = userRepository;
         this.recordRepository = recordRepository;
         this.productRepository = productRepository;
         this.recordMapper = recordMapper;
+        this.recordOutboxRepository = recordOutboxRepository;
     }
 
     public Page<RecordResponseDto> getRecords(UUID id, int limit, int offset, LocalDate date){
@@ -52,23 +53,27 @@ public class RecordService {
         }
         else uuidPage = recordRepository.findIdsByUserId(id, pageable);
         if(!uuidPage.hasContent())return Page.empty();
-        List<com.margosha.kse.calories.data.entity.Record> records = recordRepository.findAllByIdsWithProducts(uuidPage.getContent());
-        List<RecordResponseDto> recordResponseDtos = records.stream()
-                .map(recordMapper::toDto)
-                .peek(this::calculateRecordTotals)
-                .toList();
-        return new PageImpl<>(recordResponseDtos, pageable, uuidPage.getTotalElements());
+        return new PageImpl<>(getAllRecordsWithProducts(uuidPage.getContent()), pageable, uuidPage.getTotalElements());
+    }
+
+    public List<RecordResponseDto> getAllRecordsWithProducts(List<UUID> ids){
+       List<Record> records = recordRepository.findAllByIdsWithProducts(ids);
+        return records.stream()
+                 .map(recordMapper::toDto)
+                 .peek(this::calculateRecordTotals)
+                 .toList();
     }
 
     @Transactional
     public void updateRecord(UUID userId, UUID id, RecordRequestDto dto){
-        com.margosha.kse.calories.data.entity.Record record = recordRepository.findByIdAndUser_Id(id, userId).orElseThrow(()-> new EntityNotFoundException(id.toString()));
+        Record record = recordRepository.findByIdAndUser_Id(id, userId).orElseThrow(()-> new EntityNotFoundException(id.toString()));
         record.setMealType(MealType.valueOf(dto.getMealType().name()));
         Map<UUID, Product> existingProducts = getExistingProducts(dto);
         Set<ProductRecord> productRecords = record.getProductRecords();
         productRecords.clear();
         populateProductRecords(record, dto, existingProducts, productRecords);
         recordRepository.save(record);
+        recordOutboxRepository.save(new RecordOutbox(id));
     }
 
     @Transactional
@@ -88,12 +93,13 @@ public class RecordService {
     public UUID createRecord(UUID userId, RecordRequestDto dto){
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException(userId.toString()));
         Map<UUID, Product> existingProducts = getExistingProducts(dto);
-        com.margosha.kse.calories.data.entity.Record record = new com.margosha.kse.calories.data.entity.Record();
+        Record record = new Record();
         record.setMealType(MealType.valueOf(dto.getMealType().name()));
         record.setUser(user);
         Set<ProductRecord> productRecords = getProductRecords(record, dto, existingProducts);
         record.setProductRecords(productRecords);
-        com.margosha.kse.calories.data.entity.Record savedRecord = recordRepository.save(record);
+        Record savedRecord = recordRepository.save(record);
+        recordOutboxRepository.save(new RecordOutbox(savedRecord.getId()));
         return savedRecord.getId();
     }
 
@@ -117,7 +123,7 @@ public class RecordService {
         return existingProducts;
     }
 
-    private Set<ProductRecord> getProductRecords(com.margosha.kse.calories.data.entity.Record record, RecordRequestDto dto, Map<UUID, Product> existingProducts){
+    private Set<ProductRecord> getProductRecords(Record record, RecordRequestDto dto, Map<UUID, Product> existingProducts){
         Set<ProductRecord> productRecords = new HashSet<>();
         populateProductRecords(record, dto, existingProducts, productRecords);
         return productRecords;
