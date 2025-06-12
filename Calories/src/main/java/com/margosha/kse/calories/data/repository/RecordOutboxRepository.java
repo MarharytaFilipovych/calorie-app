@@ -16,7 +16,5 @@ public interface RecordOutboxRepository extends CrudRepository<RecordOutbox, UUI
     @Query(value = "SELECT DISTINCT record_id FROM record_outbox LIMIT :limit", nativeQuery = true)
     List<UUID> findDistinctRecordsIds(int limit);
 
-    void deleteByRecordId(UUID recordId);
-
-    void deleteAllByRecordIdIn(Collection<UUID> recordIds);
+    void deleteAllByRecordId(UUID recordId);
 }

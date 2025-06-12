@@ -13,11 +13,11 @@ import org.springframework.validation.annotation.Validated;
 public class RabbitSettings {
 
     @NotBlank
-    private String exchangeName = "calories.exchange";
+    private String exchangeName;
 
     @NotBlank
-    private String queueName = "MoreCalories";
+    private String queueName;
 
     @NotBlank
-    private String routingKey = "record.events";
+    private String routingKey;
 }

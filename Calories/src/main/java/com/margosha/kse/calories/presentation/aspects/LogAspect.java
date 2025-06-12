@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -103,6 +102,26 @@ public class LogAspect {
             throw e;
         }
     }
-
+    @Around("execution(* com.margosha.kse.calories.business.service.RecordOutboxService.processDeleteEvent(..))")
+    public Object logDeletionEventProduction(ProceedingJoinPoint joinPoint) throws Throwable {
+        Object[] args = joinPoint.getArgs();
+        UUID id = args.length > 0 && args[0] instanceof UUID ? (UUID) args[0] : null;
+        Instant start = Instant.now();
+        try{
+            log.info("Starting deletion event production for record with ID {}", id);
+            Object result = joinPoint.proceed();
+            log.info("Successfully produced deletion event for record with ID {} in {}ms",
+                    id, Duration.between(start, Instant.now()).toMillis());
+            return result;
+        }catch (Exception e) {
+            log.error("Deletion event production failed for record ID {} after {}ms. Error: {} - {}",
+                    id, Duration.between(start, Instant.now()).toMillis(),
+                    e.getClass().getSimpleName(), e.getMessage());
+            if (log.isDebugEnabled()) {
+                log.debug("Full stack trace for deletion event with record ID {}", id, e);
+            }
+            throw e;
+        }
+    }
 }
 

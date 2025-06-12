@@ -8,7 +8,6 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,13 +26,13 @@ public class RabbitMQConfiguration {
     }
 
     @Bean
-    public Queue queue(){
+    public Queue recordEventsQueue(){
         return new Queue(settings.getQueueName(), true);
     }
 
     @Bean
-    public Binding binding(Queue queue, DirectExchange exchange){
-        return BindingBuilder.bind(queue).to(exchange).with(settings.getRoutingKey());
+    public Binding recordEventsBinding(Queue recordEventsQueue, DirectExchange exchange) {
+        return BindingBuilder.bind(recordEventsQueue).to(exchange).with(settings.getRoutingKey());
     }
 
     @Bean

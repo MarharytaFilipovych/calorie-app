@@ -1,7 +1,9 @@
-package com.margosha.kse.calories.business.dto;
+package com.margosha.kse.CaloriesConsumer.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.margosha.kse.calories.presentation.enums.EventType;
+import com.margosha.kse.CaloriesConsumer.annotations.CorrectEnum;
+import com.margosha.kse.CaloriesConsumer.enums.EventType;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,13 +16,18 @@ import java.util.UUID;
 @NoArgsConstructor
 public class RecordEventDto {
     @JsonProperty("record")
-    private RecordResponseDto entityData;
+    private RecordDto entityData;
 
+    @NotNull
     private UUID id;
 
     @JsonProperty("event_type")
+    @NotNull
+    @CorrectEnum(enumClass = EventType.class)
     private EventType eventType;
 
     @JsonProperty("when")
+    @NotNull
     private LocalDateTime timestamp;
 }
+
