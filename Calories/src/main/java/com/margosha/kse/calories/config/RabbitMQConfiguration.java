@@ -1,10 +1,7 @@
 package com.margosha.kse.calories.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -26,8 +23,26 @@ public class RabbitMQConfiguration {
     }
 
     @Bean
+    public DirectExchange deadLetterExchange(){
+        return new DirectExchange(settings.getExchangeName() + ".dlx", true, false);
+    }
+
+    @Bean
     public Queue recordEventsQueue(){
-        return new Queue(settings.getQueueName(), true);
+        return QueueBuilder.durable(settings.getQueueName())
+                .withArgument("x-dead-letter-exchange", settings.getExchangeName() + ".dlx")
+                .withArgument("x-dead-letter-routing-key", settings.getRoutingKey() + ".dlq")
+                .build();
+    }
+
+    @Bean
+    public Queue deadLetterQueue(){
+        return new Queue(settings.getQueueName() + ".dlq", true);
+    }
+
+    @Bean
+    public Binding deadLetterBinding(Queue deadLetterQueue, DirectExchange deadLetterExchange){
+        return BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange).with(settings.getRoutingKey()+".dlq");
     }
 
     @Bean

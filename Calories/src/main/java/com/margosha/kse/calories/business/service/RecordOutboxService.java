@@ -2,10 +2,10 @@ package com.margosha.kse.calories.business.service;
 
 import com.margosha.kse.calories.business.dto.RecordEventDto;
 import com.margosha.kse.calories.business.dto.RecordResponseDto;
-import com.margosha.kse.calories.config.RabbitSettings;
 import com.margosha.kse.calories.data.repository.RecordOutboxRepository;
 import com.margosha.kse.calories.presentation.enums.EventType;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -20,26 +20,29 @@ import java.util.stream.Collectors;
 
 @EnableAsync
 @Service
+@Slf4j
 public class RecordOutboxService {
 
     private final RecordOutboxRepository recordOutboxRepository;
     private final RecordService recordService;
     private final RabbitTemplate rabbitTemplate;
-    private final RabbitSettings rabbitSettings;
 
     @Value("${batch-size}")
     private int batchSize;
 
-    public RecordOutboxService(RecordOutboxRepository recordOutboxRepository, RecordService recordService, RabbitTemplate rabbitTemplate, RabbitSettings rabbitSettings) {
+    public RecordOutboxService(RecordOutboxRepository recordOutboxRepository, RecordService recordService, RabbitTemplate rabbitTemplate) {
         this.recordOutboxRepository = recordOutboxRepository;
         this.recordService = recordService;
         this.rabbitTemplate = rabbitTemplate;
-        this.rabbitSettings = rabbitSettings;
     }
 
     @Scheduled(fixedRateString = "${rate-time}")
     public void publish(){
         List<UUID> recordIds = recordOutboxRepository.findDistinctRecordsIds(batchSize);
+        if(recordIds.isEmpty()){
+            log.info("The batch is empty at {}", LocalDateTime.now());
+            return;
+        }
         List<RecordResponseDto> existingRecords = recordService.getAllRecordsWithProducts(recordIds);
         Set<UUID> existingRecordsIds = existingRecords.stream().map(RecordResponseDto::getId).collect(Collectors.toSet());
         existingRecords.forEach(this::processRecord);

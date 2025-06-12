@@ -8,7 +8,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
-@Table("record_outbox")
+@Table(name = "record_outbox")
 @Getter
 @Setter
 @AllArgsConstructor
