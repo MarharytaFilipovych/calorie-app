@@ -6,11 +6,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.UUID;
 
 @Slf4j
 @Aspect
@@ -52,18 +54,55 @@ public class LogAspect {
                 exception.getMessage());
     }
 
-    @Around("execution(com.margosha.kse.calories.business.service.RecordOutboxService.processRecord(*))")
+    @Around("execution(* com.margosha.kse.calories.business.service.RecordOutboxService.processRecord(..))")
     public Object logEventProduction(ProceedingJoinPoint joinPoint)throws Throwable{
-        RecordResponseDto record = (RecordResponseDto) joinPoint.getArgs()[0];
-        log.info("Starting to process record event for record ID: {}", record.getId());
-        try {
+        Object[] args = joinPoint.getArgs();;
+        RecordResponseDto record = null;
+        if(args.length > 0 && args[0] instanceof RecordResponseDto){
+            record = (RecordResponseDto) args[0];
+        }
+        UUID id = record != null ? record.getId() : null;
+        Instant start = Instant.now();
+        try{
+            log.info("Starting event production for record with ID {}", id);
+            if (record != null && log.isDebugEnabled()) {
+                log.debug("Record details\n: Meal: {}, \nCalories: {}, \nProducts: {}",
+                        record.getMealType(),
+                        record.getCaloriesConsumed(),
+                        record.getProducts().size());
+            }
             Object result = joinPoint.proceed();
-            log.info("Successfully processed record event for record ID: {}", record.getId());
+            log.info("Successfully produced event for record with ID {} in {}ms",
+                    id, Duration.between(start, Instant.now()).toMillis());
+
             return result;
-        } catch (Exception e) {
-            log.error("Failed to process record event for record ID: {}, error: {}",
-                    record.getId(), e.getMessage(), e);
+        }catch (Exception e) {
+            log.error("Event production failed for record ID with {} after {}ms. Error: {} - {}",
+                    id, Duration.between(start, Instant.now()).toMillis(),
+                    e.getClass().getSimpleName(), e.getMessage());
+            if (log.isDebugEnabled()) {
+                log.debug("Full stack trace for record with ID {}", id, e);
+            }
             throw e;
         }
     }
+
+    @Around("execution(* com.margosha.kse.calories.business.service.RecordOutboxService.publish(..))")
+    public Object logPublishProcess(ProceedingJoinPoint joinPoint) throws Throwable {
+        Instant startTime = Instant.now();
+        try {
+            log.info("Starting outbox publish batch");
+            Object result = joinPoint.proceed();
+            log.info("Completed outbox publish batch in {}ms",
+                    Duration.between(startTime, Instant.now()).toMillis());
+            return result;
+
+        } catch (Exception e) {
+            log.error("Outbox publish batch failed after {}ms: {}",
+                    Duration.between(startTime, Instant.now()).toMillis(), e.getMessage(), e);
+            throw e;
+        }
+    }
+
 }
+

@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @EnableAsync
 @Service
@@ -34,9 +36,11 @@ public class RecordOutboxService {
     @Scheduled(fixedRateString = "${rate-time}")
     public void publish(){
         List<UUID> recordIds = recordOutboxRepository.findDistinctRecordsIds(batchSize);
-
-        recordService.getAllRecordsWithProducts(recordIds)
-                .forEach(this::processRecord);
+        List<RecordResponseDto> existingRecords = recordService.getAllRecordsWithProducts(recordIds);
+        Set<UUID> existingRecordsIds = existingRecords.stream().map(RecordResponseDto::getId).collect(Collectors.toSet());
+        Set<UUID> notfoundRecordIds = recordIds.stream().filter(id -> !existingRecordsIds.contains(id)).collect(Collectors.toSet());
+        existingRecords.forEach(this::processRecord);
+        recordOutboxRepository.deleteAllByRecordIdIn(notfoundRecordIds);
     }
 
     @Transactional
