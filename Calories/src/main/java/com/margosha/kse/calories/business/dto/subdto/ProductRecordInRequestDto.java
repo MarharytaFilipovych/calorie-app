@@ -1,16 +1,17 @@
 package com.margosha.kse.calories.business.dto.subdto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.hibernate.validator.constraints.UUID;
 
 @Data
 @AllArgsConstructor
 public class ProductRecordInRequestDto {
 
     @NotNull(message = "Product id is obligatory!")
+    @JsonProperty("product_id")
     private java.util.UUID productId;
 
     @NotNull(message = "Quantity is obligatory!")

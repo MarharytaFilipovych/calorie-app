@@ -16,6 +16,7 @@ public class RecordRequestDto {
     @NotNull(message = "Products list is required")
     @NotEmpty(message = "Products list cannot be empty")
     @Valid
+    @JsonProperty("products")
     private Set<ProductRecordInRequestDto> productRecords;
 
     @NotNull(message = "Meal type property is obligatory!")

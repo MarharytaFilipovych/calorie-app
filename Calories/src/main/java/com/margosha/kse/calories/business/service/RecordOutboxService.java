@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -37,8 +38,9 @@ public class RecordOutboxService {
     }
 
     @Scheduled(fixedRateString = "${rate-time}")
+    @Transactional
     public void publish(){
-        List<UUID> recordIds = recordOutboxRepository.findDistinctRecordsIds(batchSize);
+        List<UUID> recordIds = recordOutboxRepository.findDistinctRecordsIds(PageRequest.of(0, batchSize));
         if(recordIds.isEmpty()){
             log.info("The batch is empty at {}", LocalDateTime.now());
             return;

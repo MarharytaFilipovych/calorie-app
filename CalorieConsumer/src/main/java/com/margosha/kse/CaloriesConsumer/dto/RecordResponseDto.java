@@ -2,16 +2,18 @@ package com.margosha.kse.CaloriesConsumer.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.margosha.kse.CaloriesConsumer.enums.MealType;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
 @Data
-public class RecordDto {
-    @NotNull
+@AllArgsConstructor
+@NoArgsConstructor
+public class RecordResponseDto {
     private UUID id;
 
     @JsonProperty("meal_type")
@@ -20,8 +22,7 @@ public class RecordDto {
     @JsonProperty("consumed_at")
     private LocalDateTime consumedAt;
 
-    @Valid
-    private Set<ProductRecordDto> products;
+    private Set<ProductRecordInResponseDto> products;
 
     @JsonProperty("calories_consumed")
     private int caloriesConsumed;

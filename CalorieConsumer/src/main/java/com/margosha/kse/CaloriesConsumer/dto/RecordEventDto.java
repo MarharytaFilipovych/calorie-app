@@ -16,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class RecordEventDto {
     @JsonProperty("record")
-    private RecordDto entityData;
+    private RecordResponseDto entityData;
 
     @NotNull
     private UUID id;

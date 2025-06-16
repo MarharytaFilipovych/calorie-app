@@ -7,11 +7,15 @@ import com.margosha.kse.CaloriesConsumer.annotations.CorrectName;
 import com.margosha.kse.CaloriesConsumer.annotations.Nutrient;
 import com.margosha.kse.CaloriesConsumer.enums.MeasurementUnit;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import java.util.UUID;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductDto {
     private UUID id;
 

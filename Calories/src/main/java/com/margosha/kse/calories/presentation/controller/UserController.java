@@ -32,7 +32,7 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> getUsers(
             @Parameter(description = "Pagination parameters")
             @ParameterObject Pagination pagination) {
-        Page<UserDto> result = userService.getAllUsers(pagination.getLimit(), pagination.getPage());
+        Page<UserDto> result = userService.getAllUsers(pagination.getLimit(), pagination.getOffset());
         return ResponseEntity.ok(Map.of(
                 "meta" , new Meta(result),
                 "users", result.getContent()

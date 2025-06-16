@@ -43,7 +43,7 @@ public class ProductController {
             @RequestParam(required = false) @CorrectName(required = false) String name,
             @Parameter(description = "Pagination parameters")
             @ParameterObject Pagination pagination) {
-        Page<ProductDto> result = productService.getAll(name, pagination.getLimit(), pagination.getPage());
+        Page<ProductDto> result = productService.getAll(name, pagination.getLimit(), pagination.getOffset());
         return ResponseEntity.ok(Map.of(
                 "meta" , new Meta(result),
                 "products", result.getContent()

@@ -41,7 +41,7 @@ public class RecordController {
             @RequestParam(required = false)
             @PastOrPresent(message = "This date cannot point to the future!")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date){
-        Page<RecordResponseDto> result = recordService.getRecords(userId, pagination.getLimit(), pagination.getPage(), date);
+        Page<RecordResponseDto> result = recordService.getRecords(userId, pagination.getLimit(), pagination.getOffset(), date);
         return ResponseEntity.ok(Map.of(
                 "meta" , new Meta(result),
                 "records", result.getContent()
@@ -49,12 +49,12 @@ public class RecordController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Map<String, RecordResponseDto>> getConsumption(
+    public ResponseEntity<RecordResponseDto> getConsumption(
             @Parameter(description = "User unique identifier")
             @PathVariable UUID userId,
             @Parameter(description = "Record unique identifier")
             @PathVariable UUID id){
-        return ResponseEntity.ok(Map.of("record", recordService.getConsumption(userId, id)));
+        return ResponseEntity.ok(recordService.getConsumption(userId, id));
     }
 
     @PostMapping()

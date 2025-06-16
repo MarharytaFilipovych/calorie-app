@@ -10,5 +10,5 @@ public class Pagination {
     @Max(value = 100, message = "Limit cannot exceed 100")
     private int limit = 20;
     @Min(value = 1, message = "Page must be at least 1")
-    private int page = 1;
+    private int offset = 1;
 }
