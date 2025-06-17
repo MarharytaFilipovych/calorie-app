@@ -1,6 +1,6 @@
 package com.margosha.kse.CaloriesConsumer.service;
 
-import com.margosha.kse.CaloriesConsumer.ConsumptionException;
+import com.margosha.kse.CaloriesConsumer.config.ColorsSettings;
 import com.margosha.kse.CaloriesConsumer.dto.RecordEventDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
@@ -11,23 +11,27 @@ import java.util.Random;
 @Service
 @Slf4j
 public class RecordConsumerService {
+    private final String successTemplate;
+    private final String failureTemplate;
+    private final String dlqTemplate;
 
-    private static final String BLUE = "\u001B[34m";
-    private static final String MAGENTA = "\u001B[35m";
-    private static final String RED = "\u001B[31m";
-    private static final String RESET = "\u001B[0m";
+    public RecordConsumerService(ColorsSettings colorsSettings) {
+        this.successTemplate = colorsSettings.getBlue() + "😘Successfully eaten {}" + colorsSettings.getReset();
+        this.failureTemplate = colorsSettings.getRed() + "💥Failed to process {}" + colorsSettings.getReset();
+        this.dlqTemplate = colorsSettings.getMagenta() + "👻Failed event {}" + colorsSettings.getReset();
+    }
 
     @RabbitListener(queues = "#{rabbitSettings.queueName}")
     public void consumeRecordEvent(RecordEventDto event){
         if (new Random().nextInt(5) > 3) {
-            log.error(RED + "💥Failed to process {}" + RESET, event);
+            log.error(failureTemplate, event);
             throw new AmqpRejectAndDontRequeueException("Processing failed for event: " + event.getId());
         }
-        log.info(BLUE + "😘Successfully eaten {}" + RESET, event);
+        log.info(successTemplate, event);
     }
 
     @RabbitListener(queues = "#{rabbitSettings.queueName}.dlq")
     public void processFailedMessage(RecordEventDto event){
-        log.warn(MAGENTA + "👻Failed event {}" + RESET, event);
+        log.warn(dlqTemplate, event);
     }
 }
