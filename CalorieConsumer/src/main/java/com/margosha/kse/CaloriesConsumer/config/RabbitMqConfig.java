@@ -31,7 +31,6 @@ public class RabbitMqConfig {
         factory.setMessageConverter(converter);
         factory.setDefaultRequeueRejected(false);
         factory.setAcknowledgeMode(AcknowledgeMode.AUTO);
-        factory.setErrorHandler(new SilentRejectErrorHandler());
         return factory;
     }
 
