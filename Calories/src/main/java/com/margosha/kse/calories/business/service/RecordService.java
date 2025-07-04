@@ -65,20 +65,23 @@ public class RecordService {
     }
 
     @Transactional
-    public void updateRecord(UUID userId, UUID id, RecordRequestDto dto){
+    public RecordResponseDto updateRecord(UUID userId, UUID id, RecordRequestDto dto){
         Record record = recordRepository.findByIdAndUser_Id(id, userId).orElseThrow(()-> new EntityNotFoundException(id.toString()));
         record.setMealType(MealType.valueOf(dto.getMealType().name()));
         Map<UUID, Product> existingProducts = getExistingProducts(dto);
         Set<ProductRecord> productRecords = record.getProductRecords();
         productRecords.clear();
         populateProductRecords(record, dto, existingProducts, productRecords);
-        recordRepository.save(record);
+        Record updatedRecord = recordRepository.save(record);
         recordOutboxRepository.save(new RecordOutbox(id));
+        return recordMapper.toDto(updatedRecord);
     }
 
     @Transactional
-    public void deleteRecord(UUID userId, UUID id){
+    public boolean deleteRecord(UUID userId, UUID id){
+        if (!recordRepository.existsByIdAndUser_Id(id, userId))return false;
         recordRepository.deleteByIdAndUser_Id(id, userId);
+        return true;
     }
 
     public RecordResponseDto getConsumption(UUID userId, UUID id){
@@ -90,7 +93,7 @@ public class RecordService {
     }
 
     @Transactional
-    public UUID createRecord(UUID userId, RecordRequestDto dto){
+    public RecordResponseDto createRecord(UUID userId, RecordRequestDto dto){
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException(userId.toString()));
         Map<UUID, Product> existingProducts = getExistingProducts(dto);
         Record record = new Record();
@@ -100,7 +103,7 @@ public class RecordService {
         record.setProductRecords(productRecords);
         Record savedRecord = recordRepository.save(record);
         recordOutboxRepository.save(new RecordOutbox(savedRecord.getId()));
-        return savedRecord.getId();
+        return recordMapper.toDto(savedRecord);
     }
 
     private void validateProductsExist(Set<UUID> requestedIds, Map<UUID, Product> existingProducts) {

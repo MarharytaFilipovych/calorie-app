@@ -27,10 +27,10 @@ public class UserService {
         return userRepository.findAll(PageRequest.of(offset - 1, limit)).map(userMapper::toDto);
     }
 
-    public UUID createUser(UserDto dto){
+    public UserDto createUser(UserDto dto){
         if(userRepository.existsByEmail(dto.getEmail()))throw new IllegalArgumentException("User with email " + dto.getEmail() + " already exits!");
         User user = userRepository.save(userMapper.toEntity(dto));
-        return user.getId();
+        return userMapper.toDto(user);
     }
 
     public UserDto getUserById(UUID id){
@@ -43,15 +43,17 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User with email " + email + " was not found!"));
     }
 
-    public void updateUser(UserDto dto, UUID id){
+    public UserDto updateUser(UserDto dto, UUID id){
         if (!userRepository.existsById(id)) throw new EntityNotFoundException(id.toString());
         User updatedUser = userMapper.toEntity(dto);
         updatedUser.setId(id);
-        userRepository.save(updatedUser);
+        return userMapper.toDto(userRepository.save(updatedUser));
     }
 
-    public void deleteUser(UUID id){
+    public boolean deleteUser(UUID id){
+        if(!userRepository.existsById(id))return false;
         userRepository.deleteById(id);
+        return true;
     }
 
     public int getDailyTarget(UUID id){

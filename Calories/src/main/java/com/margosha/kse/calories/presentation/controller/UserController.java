@@ -43,7 +43,7 @@ public class UserController {
     public ResponseEntity<Map<String, UUID>> createUser(
             @Parameter(description = "User registration data")
             @Valid @RequestBody UserDto userDto){
-        UUID id = userService.createUser(userDto);
+        UUID id = userService.createUser(userDto).getId();
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", id));
     }
 

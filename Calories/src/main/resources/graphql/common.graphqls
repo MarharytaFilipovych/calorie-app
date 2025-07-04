@@ -1,0 +1,16 @@
+scalar DateTime
+scalar Date
+
+type Meta {
+    page: Int!,
+    totalCount: Int!,
+    pageSize: Int!,
+    totalPages: Int!,
+    hasNext: Boolean!,
+    hasPrevious: Boolean!
+}
+
+input Pagination{
+    offset: Int,
+    limit: Int
+}

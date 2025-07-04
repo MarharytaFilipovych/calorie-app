@@ -36,4 +36,6 @@ public interface RecordRepository extends JpaRepository<Record, UUID> {
         WHERE r.id IN :ids
     """)
     List<Record> findAllByIdsWithProducts(List<UUID> ids);
+
+    boolean existsByIdAndUser_Id(UUID id, UUID userId);
 }

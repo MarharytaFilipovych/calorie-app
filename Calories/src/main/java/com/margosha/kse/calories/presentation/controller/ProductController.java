@@ -33,7 +33,7 @@ public class ProductController {
     public ResponseEntity<Map<String, UUID>> createProduct(
             @Parameter(description = "Product information including nutritional values")
             @Valid @RequestBody ProductDto productDto){
-        UUID id = productService.create(productDto);
+        UUID id = productService.create(productDto).getId();
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", id));
     }
 

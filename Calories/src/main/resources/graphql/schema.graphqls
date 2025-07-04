@@ -1,0 +1,25 @@
+type Query{
+    user(id: ID!): User
+    users(pagination: Pagination): UserPage!
+    userByEmail(email: String!): User
+
+    products(name: String, pagination: Pagination): ProductPage!
+    product(id: ID!): Product
+
+    record(userId: ID!, id: ID!): Record
+    records(userId: ID!, date: Date, pagination: Pagination): RecordPage!
+}
+
+type Mutation{
+    createUser(input: UserInput!): User,
+    updateUser(id: ID!, input: UserInput!): User
+    deleteUser(id: ID!): Boolean
+
+    createProduct(input: ProductInput!): Product
+    updateProduct(id: ID!, input: ProductInput!): Product
+    deleteProduct(id: ID!): Boolean
+
+    createRecord(userId: ID!, input: RecordInput!): Record
+    updateRecord(id: ID!,  userId: ID!, input: RecordInput!): Record
+    deleteRecord(id: ID!, userId: ID!): Boolean
+}

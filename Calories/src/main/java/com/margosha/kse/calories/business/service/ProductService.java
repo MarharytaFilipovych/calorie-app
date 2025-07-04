@@ -34,11 +34,11 @@ public class ProductService {
         return productPage.map(productMapper::toDto);
     }
 
-    public UUID create(ProductDto dto){
+    public ProductDto create(ProductDto dto){
         if(dto.getBarcode() != null && productRepository.existsByBarcodeAndArchivedIsFalse(dto.getBarcode()))
             throw new IllegalArgumentException("Product with a barcode " + dto.getBarcode() + " already exits!");
         Product product = productRepository.save(productMapper.toEntity(dto));
-        return product.getId();
+        return productMapper.toDto(product);
     }
 
     public ProductDto getById(UUID id){
@@ -46,14 +46,15 @@ public class ProductService {
                 .orElseThrow(() -> new EntityNotFoundException(id.toString()));
     }
 
-    public void updateProduct(ProductDto dto, UUID id){
+    public ProductDto updateProduct(ProductDto dto, UUID id){
         if (!productRepository.existsByIdAndArchivedIsFalse(id)) throw new EntityNotFoundException(id.toString());
         Product updatedProduct = productMapper.toEntity(dto);
         updatedProduct.setId(id);
-        productRepository.save(updatedProduct);
+        return productMapper.toDto(productRepository.save(updatedProduct));
     }
 
-    public void delete(UUID id){
+    public boolean delete(UUID id){
+        if(!productRepository.existsById(id))return false;
         if(productRecordRepository.existsByProduct_Id(id))
         {
             productRepository.findById(id).ifPresent(product -> {
@@ -62,5 +63,6 @@ public class ProductService {
             });
         }
         else productRepository.deleteById(id);
+        return true;
     }
 }

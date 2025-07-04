@@ -63,7 +63,7 @@ public class RecordController {
             @PathVariable UUID userId,
             @Parameter(description = "Consumption record with products and quantities")
             @Valid @RequestBody RecordRequestDto recordRequestDto){
-        UUID recordId = recordService.createRecord(userId, recordRequestDto);
+        UUID recordId = recordService.createRecord(userId, recordRequestDto).getId();
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", recordId));
     }
 
