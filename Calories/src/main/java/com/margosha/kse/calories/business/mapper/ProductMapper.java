@@ -1,7 +1,8 @@
 package com.margosha.kse.calories.business.mapper;
 
+import com.margosha.kse.calories.business.dto.ProductRequestDto;
+import com.margosha.kse.calories.business.dto.ProductResponseDto;
 import com.margosha.kse.calories.data.entity.Product;
-import com.margosha.kse.calories.business.dto.ProductDto;
 import com.margosha.kse.calories.presentation.enums.MeasurementUnit;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -9,13 +10,13 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
     @Mapping(source = "archived", target = "archived")
-    ProductDto toDto(Product product);
+    ProductResponseDto toDto(Product product);
 
     @Mapping(target = "calories", expression = "java(calculateCalories(productDto))")
-    Product toEntity(ProductDto productDto);
+    Product toEntity(ProductRequestDto productDto);
 
     // Cloud ai generated
-    default int calculateCalories(ProductDto dto){
+    default int calculateCalories(ProductRequestDto dto){
         if (dto.getCalories() != null) return dto.getCalories();
         double calories = (dto.getProteins() * 4) +
                 (dto.getFats() * 9) +

@@ -27,14 +27,16 @@ public class RecordOutboxService {
     private final RecordOutboxRepository recordOutboxRepository;
     private final RecordService recordService;
     private final RabbitTemplate rabbitTemplate;
+    private final GraphQLEventPublisher graphQLEventPublisher;
 
     @Value("${batch-size}")
     private int batchSize;
 
-    public RecordOutboxService(RecordOutboxRepository recordOutboxRepository, RecordService recordService, RabbitTemplate rabbitTemplate) {
+    public RecordOutboxService(RecordOutboxRepository recordOutboxRepository, RecordService recordService, RabbitTemplate rabbitTemplate, GraphQLEventPublisher graphQLEventPublisher) {
         this.recordOutboxRepository = recordOutboxRepository;
         this.recordService = recordService;
         this.rabbitTemplate = rabbitTemplate;
+        this.graphQLEventPublisher = graphQLEventPublisher;
     }
 
     @Scheduled(fixedRateString = "${rate-time}")
@@ -56,6 +58,7 @@ public class RecordOutboxService {
         RecordEventDto event = new RecordEventDto(null, id,
                 EventType.DELETED, LocalDateTime.now(ZoneOffset.UTC));
         rabbitTemplate.convertAndSend(event);
+        graphQLEventPublisher.publishEvent(event);
         recordOutboxRepository.deleteAllByRecordId(id);
     }
 
@@ -64,6 +67,7 @@ public class RecordOutboxService {
         RecordEventDto event = new RecordEventDto(record, record.getId(),
                 EventType.CREATED_UPDATED, LocalDateTime.now(ZoneOffset.UTC));
         rabbitTemplate.convertAndSend(event);
+        graphQLEventPublisher.publishEvent(event);
         recordOutboxRepository.deleteAllByRecordId(record.getId());
     }
 }

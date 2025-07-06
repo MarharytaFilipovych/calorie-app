@@ -1,7 +1,8 @@
 package com.margosha.kse.calories.presentation.controller;
 
+import com.margosha.kse.calories.business.dto.ProductRequestDto;
+import com.margosha.kse.calories.business.dto.ProductResponseDto;
 import com.margosha.kse.calories.business.service.ProductService;
-import com.margosha.kse.calories.business.dto.ProductDto;
 import com.margosha.kse.calories.presentation.model.Meta;
 import com.margosha.kse.calories.presentation.model.Pagination;
 import com.margosha.kse.calories.presentation.annotations.CorrectName;
@@ -32,7 +33,7 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<Map<String, UUID>> createProduct(
             @Parameter(description = "Product information including nutritional values")
-            @Valid @RequestBody ProductDto productDto){
+            @Valid @RequestBody ProductRequestDto productDto){
         UUID id = productService.create(productDto).getId();
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", id));
     }
@@ -43,7 +44,7 @@ public class ProductController {
             @RequestParam(required = false) @CorrectName(required = false) String name,
             @Parameter(description = "Pagination parameters")
             @ParameterObject Pagination pagination) {
-        Page<ProductDto> result = productService.getAll(name, pagination.getLimit(), pagination.getOffset());
+        Page<ProductResponseDto> result = productService.getAll(name, pagination.getLimit(), pagination.getOffset());
         return ResponseEntity.ok(Map.of(
                 "meta" , new Meta(result),
                 "products", result.getContent()
@@ -51,17 +52,17 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDto> getProductById(
+    public ResponseEntity<ProductResponseDto> getProductById(
             @Parameter(description = "Product unique identifier")
             @PathVariable UUID id) {
-        ProductDto dto = productService.getById(id);
+        ProductResponseDto dto = productService.getById(id);
         return ResponseEntity.ok(dto);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateProduct(
             @Parameter(description = "Updated product information")
-            @Valid @RequestBody ProductDto productDto,
+            @Valid @RequestBody ProductRequestDto productDto,
             @Parameter(description = "Product unique identifier")
             @PathVariable UUID id ){
         productService.updateProduct(productDto, id);

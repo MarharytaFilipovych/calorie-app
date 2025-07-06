@@ -1,9 +1,8 @@
 package com.margosha.kse.calories.presentation.graphql.resolver;
 
+import com.margosha.kse.calories.business.dto.RecordRequestDto;
 import com.margosha.kse.calories.business.dto.RecordResponseDto;
 import com.margosha.kse.calories.business.service.RecordService;
-import com.margosha.kse.calories.presentation.graphql.input.RecordInput;
-import com.margosha.kse.calories.presentation.graphql.mapper.GraphQLInputMapper;
 import com.margosha.kse.calories.presentation.model.Pagination;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -16,11 +15,9 @@ import java.util.UUID;
 
 @Component
 public class RecordResolver {
-    private final GraphQLInputMapper mapper;
     private final RecordService recordService;
 
-    public RecordResolver(GraphQLInputMapper mapper, RecordService recordService) {
-        this.mapper = mapper;
+    public RecordResolver(RecordService recordService) {
         this.recordService = recordService;
     }
 
@@ -40,15 +37,15 @@ public class RecordResolver {
 
     @MutationMapping
     public RecordResponseDto createRecord(@Argument @org.hibernate.validator.constraints.UUID String userId,
-                                          @Argument @Valid RecordInput input){
-        return recordService.createRecord(UUID.fromString(userId), mapper.toDto(input));
+                                          @Argument @Valid RecordRequestDto input){
+        return recordService.createRecord(UUID.fromString(userId), input);
     }
 
     @MutationMapping
     public RecordResponseDto updateRecord(@Argument @org.hibernate.validator.constraints.UUID String id,
                                           @Argument @org.hibernate.validator.constraints.UUID String userId,
-                                          @Argument @Valid RecordInput input){
-        return recordService.updateRecord(UUID.fromString(userId), UUID.fromString(id), mapper.toDto(input));
+                                          @Argument @Valid RecordRequestDto input){
+        return recordService.updateRecord(UUID.fromString(userId), UUID.fromString(id), input);
     }
 
     @MutationMapping

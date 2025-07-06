@@ -2,8 +2,6 @@ package com.margosha.kse.calories.presentation.graphql.resolver;
 
 import com.margosha.kse.calories.business.dto.UserDto;
 import com.margosha.kse.calories.business.service.UserService;
-import com.margosha.kse.calories.presentation.graphql.input.UserInput;
-import com.margosha.kse.calories.presentation.graphql.mapper.GraphQLInputMapper;
 import com.margosha.kse.calories.presentation.model.Pagination;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -17,13 +15,10 @@ import java.util.UUID;
 @Component
 public class UserResolver {
     private final UserService userService;
-    private final GraphQLInputMapper mapper;
 
-    public UserResolver(UserService userService, GraphQLInputMapper mapper) {
+    public UserResolver(UserService userService) {
         this.userService = userService;
-        this.mapper = mapper;
     }
-
 
     @QueryMapping
     public UserDto user(@Argument @org.hibernate.validator.constraints.UUID String id){
@@ -41,13 +36,13 @@ public class UserResolver {
     }
 
     @MutationMapping
-    public UserDto createUser(@Argument @Valid UserInput input){
-        return userService.createUser(mapper.toDto(input));
+    public UserDto createUser(@Argument @Valid UserDto input){
+        return userService.createUser(input);
     }
 
     @MutationMapping
-    public UserDto updateUser(@Argument @org.hibernate.validator.constraints.UUID String id, @Argument @Valid UserInput input){
-        return userService.updateUser(mapper.toDto(input), UUID.fromString(id));
+    public UserDto updateUser(@Argument @org.hibernate.validator.constraints.UUID String id, @Argument @Valid UserDto input){
+        return userService.updateUser(input, UUID.fromString(id));
     }
 
     @MutationMapping

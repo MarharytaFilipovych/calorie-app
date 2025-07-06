@@ -1,6 +1,6 @@
 package com.margosha.kse.calories.business.service;
 
-import com.margosha.kse.calories.business.dto.ProductDto;
+import com.margosha.kse.calories.business.dto.ProductResponseDto;
 import com.margosha.kse.calories.business.dto.RecordRequestDto;
 import com.margosha.kse.calories.business.dto.RecordResponseDto;
 import com.margosha.kse.calories.business.dto.subdto.ProductRecordInRequestDto;
@@ -153,7 +153,7 @@ public class RecordService {
         for (ProductRecordInResponseDto productRecord : dto.getProducts()) {
             double quantity = productRecord.getQuantity();
             double multiplier = quantity / 100.0;
-            ProductDto product = productRecord.getProduct();
+            ProductResponseDto product = productRecord.getProduct();
             totalCalories += (int) Math.round(product.getCalories() * multiplier);
             totalProteins += product.getProteins() * multiplier;
             totalFats += product.getFats() * multiplier;

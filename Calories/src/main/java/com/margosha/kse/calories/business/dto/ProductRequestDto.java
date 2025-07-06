@@ -1,6 +1,5 @@
-package com.margosha.kse.calories.presentation.graphql.input;
+package com.margosha.kse.calories.business.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.margosha.kse.calories.presentation.annotations.CorrectEnum;
 import com.margosha.kse.calories.presentation.annotations.CorrectName;
@@ -11,9 +10,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
+import java.util.UUID;
 
 @Data
-public class ProductInput {
+public class ProductRequestDto {
     @CorrectName
     private String name;
 
@@ -54,4 +54,7 @@ public class ProductInput {
     @CorrectEnum(enumClass = MeasurementUnit.class)
     @JsonProperty("measurement_unit")
     private MeasurementUnit measurementUnit;
+
+    @JsonProperty("brand_id")
+    private UUID brandId;
 }

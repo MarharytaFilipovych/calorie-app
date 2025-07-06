@@ -1,9 +1,8 @@
 package com.margosha.kse.calories.presentation.graphql.resolver;
 
-import com.margosha.kse.calories.business.dto.ProductDto;
+import com.margosha.kse.calories.business.dto.ProductRequestDto;
+import com.margosha.kse.calories.business.dto.ProductResponseDto;
 import com.margosha.kse.calories.business.service.ProductService;
-import com.margosha.kse.calories.presentation.graphql.input.ProductInput;
-import com.margosha.kse.calories.presentation.graphql.mapper.GraphQLInputMapper;
 import com.margosha.kse.calories.presentation.model.Pagination;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -15,32 +14,30 @@ import java.util.UUID;
 
 @Component
 public class ProductResolver {
-    private final GraphQLInputMapper mapper;
     private final ProductService productService;
 
-    public ProductResolver(GraphQLInputMapper mapper, ProductService productService) {
-        this.mapper = mapper;
+    public ProductResolver(ProductService productService) {
         this.productService = productService;
     }
 
     @QueryMapping
-    public Page<ProductDto> products(@Argument String name, @Argument @Valid Pagination pagination){
+    public Page<ProductResponseDto> products(@Argument String name, @Argument @Valid Pagination pagination){
         return productService.getAll(name, pagination.getLimit(), pagination.getOffset());
     }
 
     @QueryMapping
-    public ProductDto product(@Argument @org.hibernate.validator.constraints.UUID String id){
+    public ProductResponseDto product(@Argument @org.hibernate.validator.constraints.UUID String id){
         return productService.getById(UUID.fromString(id));
     }
 
     @MutationMapping
-    public ProductDto createProduct(@Argument @Valid ProductInput input){
-        return productService.create(mapper.toDto(input));
+    public ProductResponseDto createProduct(@Argument @Valid ProductRequestDto input){
+        return productService.create(input);
     }
 
     @MutationMapping
-    public ProductDto updateProduct(@Argument @org.hibernate.validator.constraints.UUID String id, @Argument @Valid ProductInput input){
-        return productService.updateProduct(mapper.toDto(input), UUID.fromString(id));
+    public ProductResponseDto updateProduct(@Argument @org.hibernate.validator.constraints.UUID String id, @Argument @Valid ProductRequestDto input){
+        return productService.updateProduct(input, UUID.fromString(id));
     }
 
     @MutationMapping

@@ -1,0 +1,15 @@
+type Brand{
+    id: ID!,
+    name: String!,
+    description: String
+}
+
+input BrandInput{
+    name: String!,
+    description: String
+}
+
+type BrandPage{
+    data: [Brand]!,
+    meta: Meta!
+}

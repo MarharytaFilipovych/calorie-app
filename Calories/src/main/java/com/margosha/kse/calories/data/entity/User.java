@@ -15,7 +15,11 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", indexes = {
+        @Index(name = "user_email", columnList = "email", unique = true),
+        @Index(name = "user_full_name", columnList = "first_name, last_name"),
+        @Index(name = "user_phone", columnList = "telephone")
+})
 @Getter
 @Setter
 @NoArgsConstructor

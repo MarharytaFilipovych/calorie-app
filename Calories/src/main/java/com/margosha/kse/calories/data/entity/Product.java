@@ -13,7 +13,10 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
-@Table(name = "products")
+@Table(name = "products", indexes = {
+        @Index(name = "product_name", columnList = "name"),
+        @Index(name = "product_barcode", columnList = "barcode", unique = true)
+})
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
@@ -80,4 +83,9 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.PERSIST)
     @JsonIgnore
     private Set<ProductRecord> productRecords = new HashSet<>();
+
+
+    @ManyToOne(targetEntity = Brand.class, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
 }
