@@ -27,12 +27,12 @@ public class RecordOutboxService {
     private final RecordOutboxRepository recordOutboxRepository;
     private final RecordService recordService;
     private final RabbitTemplate rabbitTemplate;
-    private final GraphQLEventPublisher graphQLEventPublisher;
+    private final GraphQLEventPublisherService graphQLEventPublisher;
 
     @Value("${batch-size}")
     private int batchSize;
 
-    public RecordOutboxService(RecordOutboxRepository recordOutboxRepository, RecordService recordService, RabbitTemplate rabbitTemplate, GraphQLEventPublisher graphQLEventPublisher) {
+    public RecordOutboxService(RecordOutboxRepository recordOutboxRepository, RecordService recordService, RabbitTemplate rabbitTemplate, GraphQLEventPublisherService graphQLEventPublisher) {
         this.recordOutboxRepository = recordOutboxRepository;
         this.recordService = recordService;
         this.rabbitTemplate = rabbitTemplate;

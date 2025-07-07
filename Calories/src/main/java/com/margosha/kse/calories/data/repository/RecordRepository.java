@@ -32,7 +32,6 @@ public interface RecordRepository extends JpaRepository<Record, UUID> {
     @Query("""
         SELECT DISTINCT r FROM Record r
         JOIN FETCH r.productRecords rp
-        JOIN FETCH rp.product
         WHERE r.id IN :ids
     """)
     List<Record> findAllByIdsWithProducts(List<UUID> ids);

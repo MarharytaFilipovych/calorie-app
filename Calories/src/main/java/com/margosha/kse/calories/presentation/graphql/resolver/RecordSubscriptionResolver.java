@@ -1,23 +1,24 @@
 package com.margosha.kse.calories.presentation.graphql.resolver;
 
 import com.margosha.kse.calories.business.dto.RecordEventDto;
-import com.margosha.kse.calories.business.service.GraphQLEventPublisher;
+import com.margosha.kse.calories.business.service.GraphQLEventPublisherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.SubscriptionMapping;
 import org.springframework.stereotype.Component;
 import org.reactivestreams.Publisher;
+import reactor.core.publisher.Flux;
 
 @Component
 @Slf4j
 public class RecordSubscriptionResolver {
-    private final GraphQLEventPublisher eventPublisher;
+    private final GraphQLEventPublisherService eventPublisher;
 
-    public RecordSubscriptionResolver(GraphQLEventPublisher eventPublisher) {
+    public RecordSubscriptionResolver(GraphQLEventPublisherService eventPublisher) {
         this.eventPublisher = eventPublisher;
     }
 
     @SubscriptionMapping
-    public Publisher<RecordEventDto> recordEvents(){
+    public Flux<RecordEventDto> recordEvents(){
         log.info("New client subscribed to record events");
         return eventPublisher.getEventStream()
                 .doOnSubscribe(subscription -> log.info("Client subscribed to recordEvents"))

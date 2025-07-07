@@ -2,8 +2,11 @@ package com.margosha.kse.calories.business.service;
 
 import com.margosha.kse.calories.business.dto.ProductRequestDto;
 import com.margosha.kse.calories.business.dto.ProductResponseDto;
+import com.margosha.kse.calories.business.dto.RecordResponseDto;
+import com.margosha.kse.calories.business.dto.subdto.ProductRecordInResponseDto;
 import com.margosha.kse.calories.business.mapper.ProductMapper;
 import com.margosha.kse.calories.data.entity.Product;
+import com.margosha.kse.calories.data.entity.ProductRecord;
 import com.margosha.kse.calories.data.repository.BrandRepository;
 import com.margosha.kse.calories.data.repository.ProductRecordRepository;
 import com.margosha.kse.calories.data.repository.ProductRepository;
@@ -13,7 +16,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -22,12 +26,14 @@ public class ProductService {
     private final ProductMapper productMapper;
     private final ProductRecordRepository productRecordRepository;
     private final BrandRepository brandRepository;
+    private final RecordService recordService;
 
-    public ProductService(ProductRepository productRepository, ProductMapper productMapper, ProductRecordRepository productRecordRepository, BrandRepository brandRepository) {
+    public ProductService(ProductRepository productRepository, ProductMapper productMapper, ProductRecordRepository productRecordRepository, BrandRepository brandRepository, RecordService recordService) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.productRecordRepository = productRecordRepository;
         this.brandRepository = brandRepository;
+        this.recordService = recordService;
     }
 
     public Page<ProductResponseDto> getAll(String name, int limit, int offset){
@@ -73,4 +79,33 @@ public class ProductService {
         else productRepository.deleteById(id);
         return true;
     }
+
+    public Map<RecordResponseDto, List<ProductRecordInResponseDto>> getProductsForRecords(List<RecordResponseDto> records) {
+        Set<UUID> recordIds = records.stream()
+                .map(RecordResponseDto::getId)
+                .collect(Collectors.toSet());
+
+        List<ProductRecord> productRecords = productRecordRepository.findByRecordIdIn(recordIds);
+
+        Map<UUID, List<ProductRecord>> productRecordsByRecordId = productRecords.stream()
+                .collect(Collectors.groupingBy(pr -> pr.getRecord().getId()));
+
+        Map<RecordResponseDto, List<ProductRecordInResponseDto>> result = new HashMap<>();
+
+        for (RecordResponseDto record : records) {
+            List<ProductRecord> recordProductRecords = productRecordsByRecordId.getOrDefault(
+                    record.getId(), Collections.emptyList());
+
+            List<ProductRecordInResponseDto> productRecordDtos = recordProductRecords.stream()
+                    .map(pr -> new ProductRecordInResponseDto(
+                            productMapper.toDto(pr.getProduct()),
+                            pr.getQuantity()
+                    ))
+                    .collect(Collectors.toList());
+            recordService.calculateRecordTotals(record);
+            result.put(record, productRecordDtos);
+        }
+        return result;
+    }
+
 }

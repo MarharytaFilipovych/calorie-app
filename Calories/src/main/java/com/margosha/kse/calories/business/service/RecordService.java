@@ -9,10 +9,7 @@ import com.margosha.kse.calories.business.mapper.RecordMapper;
 import com.margosha.kse.calories.data.entity.*;
 import com.margosha.kse.calories.data.entity.Record;
 import com.margosha.kse.calories.data.enums.MealType;
-import com.margosha.kse.calories.data.repository.ProductRepository;
-import com.margosha.kse.calories.data.repository.RecordOutboxRepository;
-import com.margosha.kse.calories.data.repository.RecordRepository;
-import com.margosha.kse.calories.data.repository.UserRepository;
+import com.margosha.kse.calories.data.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -34,7 +31,10 @@ public class RecordService {
     private final RecordMapper recordMapper;
     private final RecordOutboxRepository recordOutboxRepository;
 
-    public RecordService(UserRepository userRepository, RecordRepository recordRepository, ProductRepository productRepository, RecordMapper recordMapper, RecordOutboxRepository recordOutboxRepository) {
+    public RecordService(UserRepository userRepository,
+                         RecordRepository recordRepository,
+                         ProductRepository productRepository,
+                         RecordMapper recordMapper, RecordOutboxRepository recordOutboxRepository) {
         this.userRepository = userRepository;
         this.recordRepository = recordRepository;
         this.productRepository = productRepository;
@@ -42,7 +42,7 @@ public class RecordService {
         this.recordOutboxRepository = recordOutboxRepository;
     }
 
-    public Page<RecordResponseDto> getRecords(UUID id, int limit, int offset, LocalDate date){
+    public Page<RecordResponseDto> getRecords(UUID id, int limit, int offset, LocalDate date, boolean loadProducts){
         if(!userRepository.existsById(id))throw new EntityNotFoundException(id.toString());
         Pageable pageable = PageRequest.of(offset - 1, limit);
         Page<UUID> uuidPage;
@@ -53,7 +53,9 @@ public class RecordService {
         }
         else uuidPage = recordRepository.findIdsByUserId(id, pageable);
         if(!uuidPage.hasContent())return Page.empty();
-        return new PageImpl<>(getAllRecordsWithProducts(uuidPage.getContent()), pageable, uuidPage.getTotalElements());
+        return loadProducts
+                ? new PageImpl<>(getAllRecordsWithProducts(uuidPage.getContent()), pageable, uuidPage.getTotalElements())
+                : new PageImpl<>(getAllRecordsWithoutProducts(uuidPage.getContent()), pageable, uuidPage.getTotalElements());
     }
 
     public List<RecordResponseDto> getAllRecordsWithProducts(List<UUID> ids){
@@ -62,6 +64,13 @@ public class RecordService {
                  .map(recordMapper::toDto)
                  .peek(this::calculateRecordTotals)
                  .toList();
+    }
+
+    public List<RecordResponseDto> getAllRecordsWithoutProducts(List<UUID> ids){
+        List<Record> records = recordRepository.findAllById(ids);
+        return records.stream()
+                .map(recordMapper::toDtoWithoutProducts)
+                .toList();
     }
 
     @Transactional
@@ -143,7 +152,7 @@ public class RecordService {
     }
 
     // Cloud ai generated
-    private void calculateRecordTotals(RecordResponseDto dto){
+    public void calculateRecordTotals(RecordResponseDto dto){
         int totalCalories = 0;
         double totalProteins = 0;
         double totalFats = 0;

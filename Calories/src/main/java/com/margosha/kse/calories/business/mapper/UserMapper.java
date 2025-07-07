@@ -11,6 +11,7 @@ import org.mapstruct.Mapper;
 public interface UserMapper {
 
     UserDto toDto(User user);
+
     User toEntity(UserDto userDto);
 
     default Gender map(com.margosha.kse.calories.data.enums.Gender entityGender) {

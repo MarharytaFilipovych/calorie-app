@@ -41,7 +41,7 @@ public class RecordController {
             @RequestParam(required = false)
             @PastOrPresent(message = "This date cannot point to the future!")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date){
-        Page<RecordResponseDto> result = recordService.getRecords(userId, pagination.getLimit(), pagination.getOffset(), date);
+        Page<RecordResponseDto> result = recordService.getRecords(userId, pagination.getLimit(), pagination.getOffset(), date, true);
         return ResponseEntity.ok(Map.of(
                 "meta" , new Meta(result),
                 "records", result.getContent()

@@ -29,4 +29,14 @@ public class RecordMapper {
         dto.setProducts(products);
         return dto;
     }
+
+    public RecordResponseDto toDtoWithoutProducts(Record record) {
+        RecordResponseDto dto = new RecordResponseDto();
+        dto.setId(record.getId());
+        dto.setMealType(com.margosha.kse.calories.presentation.enums.MealType.valueOf(record.getMealType().name()));
+        dto.setConsumedAt(record.getConsumedAt());
+        return dto;
+    }
+
+
 }
