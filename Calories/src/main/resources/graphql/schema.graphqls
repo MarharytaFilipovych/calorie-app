@@ -7,7 +7,7 @@ type Meta {
     hasPrevious: Boolean!
 }
 scalar Date
-scalar DateTime
+scalar LocalDateTime
 
 input Pagination{
     offset: Int,
@@ -116,7 +116,7 @@ type ProductPage{
 
 input RecordInput  {
     mealType: MealType!,
-    productRecord: [ProductRecordInput!]!
+    productRecords: [ProductRecordInput!]!
 }
 
 type ProductRecord{
@@ -125,14 +125,14 @@ type ProductRecord{
 }
 
 input ProductRecordInput {
-    product: ID!,
+    productId: ID!,
     quantity: Float!
 }
 
 type Record{
     id: ID!,
     mealType: MealType!,
-    consumedAt: DateTime!,
+    consumedAt: LocalDateTime!,
     products: [ProductRecord!],
     caloriesConsumed: Int!,
     totalQuantity: Float!,
@@ -145,7 +145,7 @@ type RecordEvent{
     entityData: Record,
     id: ID!,
     eventType: EventType!,
-    when: DateTime
+    when: LocalDateTime
 }
 
 type RecordPage{
