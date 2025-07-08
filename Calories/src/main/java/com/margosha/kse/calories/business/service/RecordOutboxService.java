@@ -39,7 +39,7 @@ public class RecordOutboxService {
         this.graphQLEventPublisher = graphQLEventPublisher;
     }
 
-    @Scheduled(fixedRateString = "${rate-time}")
+    //@Scheduled(fixedRateString = "${rate-time}")
     @Transactional
     public void publish(){
         List<UUID> recordIds = recordOutboxRepository.findDistinctRecordsIds(PageRequest.of(0, batchSize));

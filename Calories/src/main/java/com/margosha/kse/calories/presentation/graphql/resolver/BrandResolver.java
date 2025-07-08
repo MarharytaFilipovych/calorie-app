@@ -2,16 +2,19 @@ package com.margosha.kse.calories.presentation.graphql.resolver;
 
 import com.margosha.kse.calories.business.dto.BrandDto;
 import com.margosha.kse.calories.business.service.BrandService;
+import com.margosha.kse.calories.presentation.model.Meta;
 import com.margosha.kse.calories.presentation.model.Pagination;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.SchemaMapping;
+import org.springframework.stereotype.Controller;
+import java.util.List;
 import java.util.UUID;
 
-@Component
+@Controller
 public class BrandResolver {
     private final BrandService brandService;
 
@@ -24,9 +27,19 @@ public class BrandResolver {
         return brandService.getAllBrands(pagination.getLimit(), pagination.getOffset());
     }
 
+    @SchemaMapping(typeName = "BrandPage", field = "meta")
+    public Meta meta(Page<BrandDto> page) {
+        return new Meta(page);
+    }
+
+    @SchemaMapping(typeName = "BrandPage", field = "content")
+    public List<BrandDto> content(Page<BrandDto> page) {
+        return page.getContent();
+    }
+
     @QueryMapping
-    public BrandDto brand(@Argument @org.hibernate.validator.constraints.UUID String id){
-        return brandService.getBrandById(UUID.fromString(id));
+    public BrandDto brand(@Argument UUID id){
+        return brandService.getBrandById(id);
     }
 
     @QueryMapping
@@ -40,12 +53,12 @@ public class BrandResolver {
     }
 
     @MutationMapping
-    public BrandDto updateBrand(@Argument @org.hibernate.validator.constraints.UUID String id, @Argument @Valid BrandDto input){
-        return brandService.updateBrand(input, UUID.fromString(id));
+    public BrandDto updateBrand(@Argument UUID id, @Argument @Valid BrandDto input){
+        return brandService.updateBrand(input, id);
     }
 
     @MutationMapping
-    public Boolean deleteBrand(@Argument @org.hibernate.validator.constraints.UUID String id){
-        return brandService.deleteBrand(UUID.fromString(id));
+    public Boolean deleteBrand(@Argument UUID id){
+        return brandService.deleteBrand(id);
     }
 }

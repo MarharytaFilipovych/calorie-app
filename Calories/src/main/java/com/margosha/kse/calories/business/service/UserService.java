@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -58,12 +59,21 @@ public class UserService {
 
     public int getDailyTarget(UUID id){
         User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id.toString()));
+        return calculateDailyTarget(user);
+    }
+
+    private int calculateDailyTarget(User user){
         int age = Period.between(user.getBirthDate(), LocalDate.now()).getYears();
         boolean male = user.getGender().equals(Gender.MALE);
         double dailyCalories = getDailyCalories(user, age, male);
         if(male && dailyCalories < 1500) return 1500;
         else if(dailyCalories < 1200) return 1200;
         return (int)dailyCalories;
+    }
+
+    public Map<UUID, Integer> getDailyTargets(List<UUID> userIds){
+        return userRepository.findAllById(userIds).stream()
+                .collect(Collectors.toMap(User::getId, this::calculateDailyTarget));
     }
 
     private double getDailyCalories(User user, int age, boolean male) {

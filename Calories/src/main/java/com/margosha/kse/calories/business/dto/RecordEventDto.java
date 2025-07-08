@@ -22,5 +22,5 @@ public class RecordEventDto {
     private EventType eventType;
 
     @JsonProperty("when")
-    private LocalDateTime timestamp;
+    private LocalDateTime when;
 }

@@ -1,17 +1,172 @@
+type Meta {
+    page: Int!,
+    totalCount: Int!,
+    pageSize: Int!,
+    totalPages: Int!,
+    hasNext: Boolean!,
+    hasPrevious: Boolean!
+}
+scalar Date
+scalar DateTime
+
+input Pagination{
+    offset: Int,
+    limit: Int
+}
+
+enum ActivityLevel {SEDENTARY, LOW, MODERATE, HIGH, VERY_HIGH}
+enum Gender {MALE, FEMALE}
+enum Goal {LOSE, MAINTAIN, GAIN}
+enum MeasurementUnit {GRAMS, MILLILITERS, PIECES}
+enum MealType {BREAKFAST, LUNCH, DINNER, FIRST_SNACK, SECOND_SNACK, THIRD_SNACK}
+enum EventType {DELETED, CREATED_UPDATED}
+
+type Brand{
+    id: ID!,
+    name: String!,
+    description: String
+}
+
+input BrandInput{
+    name: String!,
+    description: String
+}
+
+type BrandPage{
+    content: [Brand]!,
+    meta: Meta!
+}
+
+type User {
+    id: ID!,
+    email: String!,
+    firstName: String!,
+    lastName: String!,
+    telephone: String,
+    birthDate: Date!,
+    gender: Gender!,
+    weight: Float!,
+    height: Float!,
+    activityLevel: ActivityLevel!,
+    goal: Goal!,
+    targetWeight: Float,
+    dailyTarget: Int!
+}
+
+input UserInput {
+    email: String!
+    firstName: String!
+    lastName: String!
+    telephone: String
+    birthDate: Date!
+    gender: Gender!
+    weight: Float!
+    height: Float!
+    activityLevel: ActivityLevel!
+    goal: Goal!
+    targetWeight: Float
+    dailyTarget: Int
+}
+
+type UserPage{
+    content: [User!],
+    meta: Meta
+}
+
+type Product{
+    id: ID!,
+    name: String!,
+    barcode: String,
+    proteins: Float!,
+    fats: Float!,
+    carbohydrates: Float!,
+    water: Float!,
+    salt: Float!,
+    sugar: Float!,
+    fiber: Float!,
+    alcohol: Float!,
+    description: String,
+    calories: Int!,
+    measurementUnit: MeasurementUnit!,
+    brand: Brand,
+    archived: Boolean
+}
+
+input ProductInput{
+    name: String!,
+    barcode: String,
+    proteins: Float!,
+    fats: Float!,
+    carbohydrates: Float!,
+    water: Float!,
+    salt: Float!,
+    sugar: Float!,
+    fiber: Float!,
+    alcohol: Float!,
+    description: String,
+    calories: Int!,
+    measurementUnit: MeasurementUnit!,
+    brandId: ID!
+}
+
+type ProductPage{
+    content: [Product!],
+    meta: Meta
+}
+
+input RecordInput  {
+    mealType: MealType!,
+    productRecord: [ProductRecordInput!]!
+}
+
+type ProductRecord{
+    product: Product!,
+    quantity: Float!
+}
+
+input ProductRecordInput {
+    product: ID!,
+    quantity: Float!
+}
+
+type Record{
+    id: ID!,
+    mealType: MealType!,
+    consumedAt: DateTime!,
+    products: [ProductRecord!],
+    caloriesConsumed: Int!,
+    totalQuantity: Float!,
+    totalProteins: Float!,
+    totalFats: Float!,
+    totalCarbohydrates: Float!
+}
+
+type RecordEvent{
+    entityData: Record,
+    id: ID!,
+    eventType: EventType!,
+    when: DateTime
+}
+
+type RecordPage{
+    content: [Record!],
+    meta: Meta
+}
+
 type Query{
     user(id: ID!): User
-    users(pagination: Pagination): UserPage!
+    users(pagination: Pagination): UserPage
     userByEmail(email: String!): User
 
     brand(id: ID!): Brand
-    brands(pagination: Pagination): BrandPage!
+    brands(pagination: Pagination): BrandPage
     brandByName(name: String!): Brand
 
-    products(name: String, pagination: Pagination): ProductPage!
+    products(name: String, pagination: Pagination): ProductPage
     product(id: ID!): Product
 
     record(userId: ID!, id: ID!): Record
-    records(userId: ID!, date: Date, pagination: Pagination): RecordPage!
+    records(userId: ID!, date: Date, pagination: Pagination): RecordPage
 }
 
 type Mutation{
@@ -35,4 +190,3 @@ type Mutation{
 type Subscription {
     recordEvents: RecordEvent!
 }
-

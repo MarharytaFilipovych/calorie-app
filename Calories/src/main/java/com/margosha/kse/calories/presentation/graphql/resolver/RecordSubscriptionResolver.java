@@ -4,11 +4,10 @@ import com.margosha.kse.calories.business.dto.RecordEventDto;
 import com.margosha.kse.calories.business.service.GraphQLEventPublisherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.SubscriptionMapping;
-import org.springframework.stereotype.Component;
-import org.reactivestreams.Publisher;
+import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 
-@Component
+@Controller
 @Slf4j
 public class RecordSubscriptionResolver {
     private final GraphQLEventPublisherService eventPublisher;

@@ -5,25 +5,20 @@ import com.margosha.kse.calories.business.dto.RecordResponseDto;
 import com.margosha.kse.calories.business.dto.subdto.ProductRecordInResponseDto;
 import com.margosha.kse.calories.business.service.ProductService;
 import com.margosha.kse.calories.business.service.RecordService;
-import com.margosha.kse.calories.data.entity.ProductRecord;
-import com.margosha.kse.calories.data.entity.Record;
+import com.margosha.kse.calories.presentation.model.Meta;
 import com.margosha.kse.calories.presentation.model.Pagination;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.MutationMapping;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.*;
+import org.springframework.stereotype.Controller;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+
 @Slf4j
-@Component
+@Controller
 public class RecordResolver {
     private final RecordService recordService;
     private final ProductService productService;
@@ -34,9 +29,9 @@ public class RecordResolver {
     }
 
     @QueryMapping
-    public RecordResponseDto record(@Argument @org.hibernate.validator.constraints.UUID String userId,
-                                    @Argument @org.hibernate.validator.constraints.UUID String id){
-        return recordService.getConsumption(UUID.fromString(userId), UUID.fromString(id));
+    public RecordResponseDto record(@Argument UUID userId,
+                                    @Argument UUID id){
+        return recordService.getConsumption(userId, id);
     }
 
     @QueryMapping
@@ -44,33 +39,37 @@ public class RecordResolver {
                                            @Argument LocalDate date,
                                            @Argument @Valid Pagination pagination){
         return recordService.getRecords(UUID.fromString(userId), pagination.getLimit(),
-                pagination.getOffset(), date, true);
+                pagination.getOffset(), date, false);
     }
 
-    /*@BatchMapping(typeName = "Record", field = "products")
+    @SchemaMapping(typeName = "RecordPage", field = "content")
+    public List<RecordResponseDto> content(Page<RecordResponseDto> page) {
+        return page.getContent();
+    }
+
+    @SchemaMapping(typeName = "RecordPage", field = "meta")
+    public Meta totalElements(Page<RecordResponseDto> page) {
+        return new Meta(page);
+    }
+
+    @BatchMapping(typeName = "Record", field = "products")
     public Map<RecordResponseDto, List<ProductRecordInResponseDto>> products(List<RecordResponseDto> records) {
-        log.debug("Batch loading products for {} records", records.size());
-        Map<RecordResponseDto, List<ProductRecordInResponseDto>> result = productService.getProductsForRecords(records);
-        log.debug("Loaded {} product records across {} records", result.size(), records.size());
-        return result;
-    }*/
-
-    @MutationMapping
-    public RecordResponseDto createRecord(@Argument @org.hibernate.validator.constraints.UUID String userId,
-                                          @Argument @Valid RecordRequestDto input){
-        return recordService.createRecord(UUID.fromString(userId), input);
+        return productService.getProductsForRecords(records);
     }
 
     @MutationMapping
-    public RecordResponseDto updateRecord(@Argument @org.hibernate.validator.constraints.UUID String id,
-                                          @Argument @org.hibernate.validator.constraints.UUID String userId,
-                                          @Argument @Valid RecordRequestDto input){
-        return recordService.updateRecord(UUID.fromString(userId), UUID.fromString(id), input);
+    public RecordResponseDto createRecord(@Argument UUID userId, @Argument @Valid RecordRequestDto input){
+        return recordService.createRecord(userId, input);
     }
 
     @MutationMapping
-    public Boolean deleteRecord(@Argument @org.hibernate.validator.constraints.UUID String id,
-                                          @Argument @org.hibernate.validator.constraints.UUID String userId){
-        return recordService.deleteRecord(UUID.fromString(userId), UUID.fromString(id));
+    public RecordResponseDto updateRecord(@Argument UUID id, @Argument UUID userId,
+                                          @Argument @Valid RecordRequestDto input){
+        return recordService.updateRecord(userId, id, input);
+    }
+
+    @MutationMapping
+    public Boolean deleteRecord(@Argument UUID id, @Argument UUID userId){
+        return recordService.deleteRecord(userId, id);
     }
 }
