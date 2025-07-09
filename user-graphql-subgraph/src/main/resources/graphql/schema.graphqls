@@ -1,0 +1,68 @@
+type Meta {
+    page: Int!,
+    totalCount: Int!,
+    pageSize: Int!,
+    totalPages: Int!,
+    hasNext: Boolean!,
+    hasPrevious: Boolean!
+}
+scalar Date
+scalar LocalDateTime
+
+input Pagination{
+    offset: Int,
+    limit: Int
+}
+
+enum ActivityLevel {SEDENTARY, LOW, MODERATE, HIGH, VERY_HIGH}
+enum Gender {MALE, FEMALE}
+enum Goal {LOSE, MAINTAIN, GAIN}
+
+
+type User {
+    id: ID!,
+    email: String!,
+    firstName: String!,
+    lastName: String!,
+    telephone: String,
+    birthDate: Date!,
+    gender: Gender!,
+    weight: Float!,
+    height: Float!,
+    activityLevel: ActivityLevel!,
+    goal: Goal!,
+    targetWeight: Float,
+    dailyTarget: Int!
+}
+
+input UserInput {
+    email: String!
+    firstName: String!
+    lastName: String!
+    telephone: String
+    birthDate: Date!
+    gender: Gender!
+    weight: Float!
+    height: Float!
+    activityLevel: ActivityLevel!
+    goal: Goal!
+    targetWeight: Float
+    dailyTarget: Int
+}
+
+type UserPage{
+    content: [User!],
+    meta: Meta
+}
+
+type Query{
+    user(id: ID!): User
+    users(pagination: Pagination): UserPage
+    userByEmail(email: String!): User
+}
+
+type Mutation{
+    createUser(input: UserInput!): User,
+    updateUser(id: ID!, input: UserInput!): User
+    deleteUser(id: ID!): Boolean!
+}
