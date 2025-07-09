@@ -13,10 +13,8 @@ import reactor.core.publisher.Flux;
 public class GraphQLSubscriptionClient {
     private WebSocketGraphQlClient client;
 
-    @Value("${graphql.sub.url}")
-    private String url;
-
-    public GraphQLSubscriptionClient(){
+    public GraphQLSubscriptionClient(@Value("${graphql.sub.url}") String url) {
+        log.info("Initializing GraphQL WebSocket client with URL: {}", url);
         this.client = WebSocketGraphQlClient.builder(url, new ReactorNettyWebSocketClient()).build();
     }
 
