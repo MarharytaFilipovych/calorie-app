@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.graphql.data.federation.EntityMapping;
 import org.springframework.graphql.data.method.annotation.*;
 import org.springframework.stereotype.Controller;
 import java.util.List;
@@ -76,4 +77,5 @@ public class UserResolver {
                         Function.identity(),
                         user -> dailyTargets.get(user.getId())));
     }
+
 }

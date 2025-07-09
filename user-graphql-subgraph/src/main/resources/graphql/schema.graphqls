@@ -1,4 +1,7 @@
-type Meta {
+extend schema
+@link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@shareable"])
+
+type Meta @shareable {
     page: Int!,
     totalCount: Int!,
     pageSize: Int!,
@@ -6,10 +9,10 @@ type Meta {
     hasNext: Boolean!,
     hasPrevious: Boolean!
 }
-scalar Date
-scalar LocalDateTime
 
-input Pagination{
+scalar Date
+
+input Pagination {
     offset: Int,
     limit: Int
 }
@@ -19,7 +22,7 @@ enum Gender {MALE, FEMALE}
 enum Goal {LOSE, MAINTAIN, GAIN}
 
 
-type User {
+type User @key(fields: "id") {
     id: ID!,
     email: String!,
     firstName: String!,
@@ -47,7 +50,6 @@ input UserInput {
     activityLevel: ActivityLevel!
     goal: Goal!
     targetWeight: Float
-    dailyTarget: Int
 }
 
 type UserPage{

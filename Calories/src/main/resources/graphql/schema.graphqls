@@ -1,4 +1,7 @@
-type Meta {
+extend schema
+@link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@external", "@provides"])
+
+type Meta @shareable{
     page: Int!,
     totalCount: Int!,
     pageSize: Int!,
@@ -37,41 +40,10 @@ type BrandPage{
     meta: Meta!
 }
 
-type User {
-    id: ID!,
-    email: String!,
-    firstName: String!,
-    lastName: String!,
-    telephone: String,
-    birthDate: Date!,
-    gender: Gender!,
-    weight: Float!,
-    height: Float!,
-    activityLevel: ActivityLevel!,
-    goal: Goal!,
-    targetWeight: Float,
-    dailyTarget: Int!
+type User @key(fields: "id") @external{
+    id: ID! @external
 }
 
-input UserInput {
-    email: String!
-    firstName: String!
-    lastName: String!
-    telephone: String
-    birthDate: Date!
-    gender: Gender!
-    weight: Float!
-    height: Float!
-    activityLevel: ActivityLevel!
-    goal: Goal!
-    targetWeight: Float
-    dailyTarget: Int
-}
-
-type UserPage{
-    content: [User!],
-    meta: Meta
-}
 
 type Product{
     id: ID!,
@@ -154,10 +126,6 @@ type RecordPage{
 }
 
 type Query{
-    user(id: ID!): User
-    users(pagination: Pagination): UserPage
-    userByEmail(email: String!): User
-
     brand(id: ID!): Brand
     brands(pagination: Pagination): BrandPage
     brandByName(name: String!): Brand
@@ -170,9 +138,7 @@ type Query{
 }
 
 type Mutation{
-    createUser(input: UserInput!): User,
-    updateUser(id: ID!, input: UserInput!): User
-    deleteUser(id: ID!): Boolean!
+
 
     createBrand(input: BrandInput!): Brand,
     updateBrand(id: ID!, input: BrandInput!): Brand

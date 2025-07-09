@@ -57,7 +57,6 @@ public class GraphQLConfig {
             return ISO_FORMATTER.format(dateTime);
         }
         if (dataFetcherResult instanceof String) {
-            // Validate the string format
             try {
                 LocalDateTime.parse((String) dataFetcherResult);
                 return (String) dataFetcherResult;

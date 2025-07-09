@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.margosha.kse.calories</groupId>
 	<artifactId>user-graphql-subgraph</artifactId>
-	<version>0.0.1-SNAPSHOT</version>schema.graphqls
+	<version>0.0.1-SNAPSHOT</version>
 	<name>user-graphql-subgraph</name>
 	<description>Separate service for the user subgraph</description>
 
