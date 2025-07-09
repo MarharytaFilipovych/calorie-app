@@ -56,6 +56,15 @@ public class GraphQLConfig {
         if (dataFetcherResult instanceof LocalDateTime dateTime) {
             return ISO_FORMATTER.format(dateTime);
         }
+        if (dataFetcherResult instanceof String) {
+            // Validate the string format
+            try {
+                LocalDateTime.parse((String) dataFetcherResult);
+                return (String) dataFetcherResult;
+            } catch (DateTimeParseException e) {
+                throw new CoercingSerializeException("Invalid date format: " + dataFetcherResult);
+            }
+        }
         throw new CoercingSerializeException("Expected a LocalDateTime object but got: " + dataFetcherResult.getClass());
     }
 

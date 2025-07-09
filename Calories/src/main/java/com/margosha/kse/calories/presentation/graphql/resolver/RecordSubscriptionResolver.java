@@ -1,11 +1,17 @@
 package com.margosha.kse.calories.presentation.graphql.resolver;
 
 import com.margosha.kse.calories.business.dto.RecordEventDto;
+import com.margosha.kse.calories.business.dto.RecordResponseDto;
+import com.margosha.kse.calories.business.dto.subdto.ProductRecordInResponseDto;
 import com.margosha.kse.calories.business.service.GraphQLEventPublisherService;
+import com.margosha.kse.calories.presentation.enums.EventType;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.graphql.data.method.annotation.SubscriptionMapping;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
+
+import java.util.Set;
 
 @Controller
 @Slf4j

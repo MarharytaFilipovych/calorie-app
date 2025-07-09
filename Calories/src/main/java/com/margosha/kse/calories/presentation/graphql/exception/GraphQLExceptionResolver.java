@@ -83,6 +83,4 @@ public class GraphQLExceptionResolver extends DataFetcherExceptionResolverAdapte
                 .errorType(ErrorType.ExecutionAborted)
                 .build();
     }
-
-
 }

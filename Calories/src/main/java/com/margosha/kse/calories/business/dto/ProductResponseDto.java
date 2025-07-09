@@ -27,6 +27,7 @@ public class ProductResponseDto {
     private Double alcohol;
     private String description;
     private Integer calories;
+    @JsonProperty("measurement_unit")
     private MeasurementUnit measurementUnit;
     private BrandDto brand;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)

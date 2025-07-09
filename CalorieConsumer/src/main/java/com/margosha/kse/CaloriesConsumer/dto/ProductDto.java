@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.margosha.kse.CaloriesConsumer.annotations.CorrectEnum;
 import com.margosha.kse.CaloriesConsumer.annotations.CorrectName;
 import com.margosha.kse.CaloriesConsumer.annotations.Nutrient;
-import com.margosha.kse.CaloriesConsumer.enums.MeasurementUnit;
+import com.margosha.kse.CaloriesConsumer.dto.enums.MeasurementUnit;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

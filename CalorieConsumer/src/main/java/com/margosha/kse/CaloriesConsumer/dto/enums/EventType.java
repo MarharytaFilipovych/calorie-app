@@ -1,4 +1,4 @@
-package com.margosha.kse.CaloriesConsumer.enums;
+package com.margosha.kse.CaloriesConsumer.dto.enums;
 
 public enum EventType {
     DELETED, CREATED_UPDATED

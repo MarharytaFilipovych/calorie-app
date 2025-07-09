@@ -1,7 +1,7 @@
 package com.margosha.kse.CaloriesConsumer.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.margosha.kse.CaloriesConsumer.enums.MealType;
+import com.margosha.kse.CaloriesConsumer.dto.enums.MealType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

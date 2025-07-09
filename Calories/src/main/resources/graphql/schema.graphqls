@@ -142,7 +142,7 @@ type Record{
 }
 
 type RecordEvent{
-    entityData: Record,
+    record: Record,
     id: ID!,
     eventType: EventType!,
     when: LocalDateTime

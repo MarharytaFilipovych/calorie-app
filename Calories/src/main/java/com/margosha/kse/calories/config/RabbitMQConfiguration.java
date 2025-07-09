@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfiguration {
-
     private final RabbitSettings settings;
 
     public RabbitMQConfiguration(RabbitSettings settings) {
@@ -22,16 +21,36 @@ public class RabbitMQConfiguration {
         return new DirectExchange(settings.getExchangeName(), true, false);
     }
 
+    @Bean
+    public DirectExchange deadLetterExchange(){
+        return new DirectExchange(settings.getExchangeName() + ".dlx", true, false);
+    }
 
     @Bean
     public Queue recordEventsQueue(){
         return QueueBuilder.durable(settings.getQueueName())
+                .withArgument("x-dead-letter-exchange", settings.getExchangeName() + ".dlx")
+                .withArgument("x-dead-letter-routing-key", settings.getRoutingKey() + ".dlq")
                 .build();
     }
 
     @Bean
+    public Queue deadLetterQueue(){
+        return new Queue(settings.getQueueName() + ".dlq", true);
+    }
+
+    @Bean
+    public Binding deadLetterBinding(Queue deadLetterQueue, DirectExchange deadLetterExchange){
+        return BindingBuilder.bind(deadLetterQueue)
+                .to(deadLetterExchange)
+                .with(settings.getRoutingKey() + ".dlq");
+    }
+
+    @Bean
     public Binding recordEventsBinding(Queue recordEventsQueue, DirectExchange exchange) {
-        return BindingBuilder.bind(recordEventsQueue).to(exchange).with(settings.getRoutingKey());
+        return BindingBuilder.bind(recordEventsQueue)
+                .to(exchange)
+                .with(settings.getRoutingKey());
     }
 
     @Bean

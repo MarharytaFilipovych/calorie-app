@@ -5,7 +5,6 @@ import com.margosha.kse.calories.presentation.enums.EventType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -13,14 +12,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RecordEventDto {
-    @JsonProperty("record")
-    private RecordResponseDto entityData;
+    private RecordResponseDto record;
 
     private UUID id;
 
     @JsonProperty("event_type")
     private EventType eventType;
 
-    @JsonProperty("when")
     private LocalDateTime when;
 }
