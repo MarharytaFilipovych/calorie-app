@@ -1,14 +1,14 @@
-package com.margosha.kse.calories.user_graphql_subgraph.presentation.resolver;
+package com.margosha.kse.calories.presentation.graphql.resolver;
 
-import com.margosha.kse.calories.user_graphql_subgraph.business.dto.UserDto;
-import com.margosha.kse.calories.user_graphql_subgraph.business.service.UserService;
-import com.margosha.kse.calories.user_graphql_subgraph.presentation.model.Meta;
-import com.margosha.kse.calories.user_graphql_subgraph.presentation.model.Pagination;
+
+import com.margosha.kse.calories.business.dto.UserDto;
+import com.margosha.kse.calories.business.service.UserService;
+import com.margosha.kse.calories.presentation.model.Meta;
+import com.margosha.kse.calories.presentation.model.Pagination;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.graphql.data.federation.EntityMapping;
 import org.springframework.graphql.data.method.annotation.*;
 import org.springframework.stereotype.Controller;
 import java.util.List;
