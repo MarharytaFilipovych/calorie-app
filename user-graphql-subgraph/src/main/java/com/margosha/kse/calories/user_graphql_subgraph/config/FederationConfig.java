@@ -1,4 +1,4 @@
-package com.margosha.kse.calories.user_graphql_subgraph.business.config;
+package com.margosha.kse.calories.user_graphql_subgraph.config;
 
 import org.springframework.boot.autoconfigure.graphql.GraphQlSourceBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
