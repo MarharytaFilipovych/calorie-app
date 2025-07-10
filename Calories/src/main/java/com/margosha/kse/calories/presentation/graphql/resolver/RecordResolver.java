@@ -9,9 +9,7 @@ import com.margosha.kse.calories.data.entity.User;
 import com.margosha.kse.calories.presentation.model.Meta;
 import com.margosha.kse.calories.presentation.model.Pagination;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.graphql.data.federation.EntityMapping;
 import org.springframework.graphql.data.method.annotation.*;
 import org.springframework.stereotype.Controller;
 import java.time.LocalDate;
@@ -19,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@Slf4j
 @Controller
 public class RecordResolver {
     private final RecordService recordService;
@@ -31,8 +28,7 @@ public class RecordResolver {
     }
 
     @QueryMapping
-    public RecordResponseDto record(@Argument UUID userId,
-                                    @Argument UUID id){
+    public RecordResponseDto record(@Argument UUID userId, @Argument UUID id){
         return recordService.getConsumption(userId, id);
     }
 
@@ -76,31 +72,11 @@ public class RecordResolver {
     }
 
     @SchemaMapping(typeName = "User", field = "records")
-    public Page<RecordResponseDto> userRecords(
-            User user,
-            @Argument LocalDate date,
+    public Page<RecordResponseDto> userRecords(User user, @Argument LocalDate date,
             @Argument Pagination pagination) {
-
-        log.info("Fetching records for user: {}", user.getId());
-
         if (pagination == null) pagination = new Pagination();
-
-        return recordService.getRecords(
-                user.getId(),
-                pagination.getLimit(),
-                pagination.getOffset(),
-                date,
-                true
-        );
+        return recordService.getRecords(user.getId(),
+                pagination.getLimit(), pagination.getOffset(),
+                date, true);
     }
-
-    @EntityMapping
-    public User user(Map<String, Object> representation) {
-        String id = (String) representation.get("id");
-        log.info("Resolving User entity with id: {}", id);
-        User user = new User();
-        user.setId(UUID.fromString(id));
-        return user;
-    }
-
 }
