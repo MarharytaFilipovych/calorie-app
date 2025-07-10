@@ -1,6 +1,11 @@
 package com.margosha.kse.calories.user_graphql_subgraph.business.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.margosha.kse.calories.user_graphql_subgraph.data.entity.enums.ActivityLevel;
+import com.margosha.kse.calories.user_graphql_subgraph.data.entity.enums.Gender;
+import com.margosha.kse.calories.user_graphql_subgraph.data.entity.enums.Goal;
+import com.margosha.kse.calories.user_graphql_subgraph.presentation.annotations.CorrectEnum;
+import com.margosha.kse.calories.user_graphql_subgraph.presentation.annotations.CorrectName;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;

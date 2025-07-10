@@ -78,4 +78,10 @@ public class UserResolver {
                         user -> dailyTargets.get(user.getId())));
     }
 
+    @EntityMapping
+    public UserDto user(Map<String, Object> representation) {
+        String id = (String) representation.get("id");
+        log.info("Resolving User entity with id: {}", id);
+        return userService.getUserById(UUID.fromString(id));
+    }
 }

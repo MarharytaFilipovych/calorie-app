@@ -44,6 +44,9 @@ type User @key(fields: "id") @external{
     id: ID! @external
 }
 
+extend type User @key(fields: "id") {
+    records(date: Date, pagination: Pagination): RecordPage
+}
 
 type Product{
     id: ID!,

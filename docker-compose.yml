@@ -37,6 +37,28 @@ services:
     ports:
       - "9411:9411"
 
+  user-graphql-subgraph:
+    build:
+      context: ./user-graphql-subgraph
+      dockerfile: Dockerfile
+    container_name: user-graphql-subgraph
+    ports:
+      - "8085:8085"
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/calories_db
+      DB_USER: app_user
+      DB_PASSWORD: app_password
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8085/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
   calories-producer:
     build:
       context: ./Calories

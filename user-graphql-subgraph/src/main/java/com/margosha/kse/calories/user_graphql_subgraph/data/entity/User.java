@@ -75,11 +75,4 @@ public class User {
     @LastModifiedDate
     @Column(name = "updated_at", updatable = false)
     private LocalDateTime updatedAt;
-
-    @OneToMany(
-            mappedBy = "user",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-            targetEntity = java.lang.Record.class,
-            orphanRemoval = true)
-    private Set<Record> records = new HashSet<>();
 }

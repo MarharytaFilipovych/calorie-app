@@ -72,4 +72,25 @@ public class RecordResolver {
     public Boolean deleteRecord(@Argument UUID id, @Argument UUID userId){
         return recordService.deleteRecord(userId, id);
     }
+
+    @SchemaMapping(typeName = "User", field = "records")
+    public Page<RecordResponseDto> userRecords(
+            Map<String, Object> user,
+            @Argument LocalDate date,
+            @Argument Pagination pagination) {
+
+        UUID userId = (UUID) user.get("id");
+        log.info("Fetching records for user: {}", userId);
+
+        if (pagination == null) pagination = new Pagination();
+
+        return recordService.getRecords(
+                userId,
+                pagination.getLimit(),
+                pagination.getOffset(),
+                date,
+                false
+        );
+    }
+
 }

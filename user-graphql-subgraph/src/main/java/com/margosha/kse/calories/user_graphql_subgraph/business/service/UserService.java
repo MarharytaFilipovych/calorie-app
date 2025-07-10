@@ -59,11 +59,6 @@ public class UserService {
         return true;
     }
 
-    public int getDailyTarget(UUID id){
-        User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id.toString()));
-        return calculateDailyTarget(user);
-    }
-
     private int calculateDailyTarget(User user){
         int age = Period.between(user.getBirthDate(), LocalDate.now()).getYears();
         boolean male = user.getGender().equals(Gender.MALE);
