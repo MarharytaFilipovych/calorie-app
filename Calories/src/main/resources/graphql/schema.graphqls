@@ -1,5 +1,5 @@
 extend schema
-@link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@external", "@provides"])
+@link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@external", "@shareable", "@extends"])
 
 type Meta @shareable{
     page: Int!,
@@ -40,13 +40,12 @@ type BrandPage{
     meta: Meta!
 }
 
-type User @key(fields: "id") @external{
-    id: ID! @external
-}
 
-extend type User @key(fields: "id") {
+type User @key(fields: "id") @extends {
+    id: ID! @external
     records(date: Date, pagination: Pagination): RecordPage
 }
+
 
 type Product{
     id: ID!,

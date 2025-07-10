@@ -5,11 +5,13 @@ import com.margosha.kse.calories.business.dto.RecordResponseDto;
 import com.margosha.kse.calories.business.dto.subdto.ProductRecordInResponseDto;
 import com.margosha.kse.calories.business.service.ProductService;
 import com.margosha.kse.calories.business.service.RecordService;
+import com.margosha.kse.calories.data.entity.User;
 import com.margosha.kse.calories.presentation.model.Meta;
 import com.margosha.kse.calories.presentation.model.Pagination;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.graphql.data.federation.EntityMapping;
 import org.springframework.graphql.data.method.annotation.*;
 import org.springframework.stereotype.Controller;
 import java.time.LocalDate;
@@ -75,22 +77,30 @@ public class RecordResolver {
 
     @SchemaMapping(typeName = "User", field = "records")
     public Page<RecordResponseDto> userRecords(
-            Map<String, Object> user,
+            User user,
             @Argument LocalDate date,
             @Argument Pagination pagination) {
 
-        UUID userId = (UUID) user.get("id");
-        log.info("Fetching records for user: {}", userId);
+        log.info("Fetching records for user: {}", user.getId());
 
         if (pagination == null) pagination = new Pagination();
 
         return recordService.getRecords(
-                userId,
+                user.getId(),
                 pagination.getLimit(),
                 pagination.getOffset(),
                 date,
-                false
+                true
         );
+    }
+
+    @EntityMapping
+    public User user(Map<String, Object> representation) {
+        String id = (String) representation.get("id");
+        log.info("Resolving User entity with id: {}", id);
+        User user = new User();
+        user.setId(UUID.fromString(id));
+        return user;
     }
 
 }
