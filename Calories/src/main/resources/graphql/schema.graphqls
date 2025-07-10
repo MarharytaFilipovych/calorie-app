@@ -1,7 +1,4 @@
-extend schema
-@link(url: "https://specs.apollo.dev/federation/v2.0", import: ["@key", "@external", "@shareable", "@requires"])
-
-type Meta @shareable{
+type Meta {
     page: Int!,
     totalCount: Int!,
     pageSize: Int!,
@@ -9,6 +6,7 @@ type Meta @shareable{
     hasNext: Boolean!,
     hasPrevious: Boolean!
 }
+
 scalar Date
 scalar LocalDateTime
 
