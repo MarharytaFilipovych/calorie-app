@@ -41,9 +41,8 @@ type BrandPage{
 }
 
 
-type User @key(fields: "id") @extends {
+type User @key(fields: "id"){
     id: ID! @external
-    records(date: Date, pagination: Pagination): RecordPage
 }
 
 
