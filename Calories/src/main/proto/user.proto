@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+package calories;
+
+option java_package = "com.margosha.kse.calories.proto";
+option java_outer_classname = "UserProto";
+option java_multiple_files = true;
+
+import "common.proto";
+
+enum Goal {
+  LOSE = 0;
+  MAINTAIN = 1;
+  GAIN = 2;
+}
+
+enum Gender {
+  MALE = 0;
+  FEMALE = 1;
+}
+
+enum ActivityLevel {
+  SEDENTARY = 0;
+  LOW = 1;
+  MODERATE = 2;
+  HIGH = 3;
+  VERY_HIGH = 4;
+}
+
+message UserInput {
+  string email = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string telephone = 4;
+  calories.common.Date birth_date = 5;
+  Gender gender = 6;
+  double weight = 7;
+  double height = 8;
+  ActivityLevel activity_level = 9;
+  Goal goal = 10;
+  double target_weight = 11;
+}
+
+message User {
+  string id = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string telephone = 5;
+  calories.common.Date birth_date = 6;
+  Gender gender = 7;
+  double weight = 8;
+  double height = 9;
+  ActivityLevel activity_level = 10;
+  Goal goal = 11;
+  double target_weight = 12;
+}
+
+message GetUsersRequest {
+  calories.common.Pagination pagination = 1;
+}
+
+message GetUsersResponse {
+  repeated User users = 1;
+  calories.common.Meta meta = 2;
+}
+
+message GetUserByEmailRequest {
+  string email = 1;
+}
+
+message CreateUserRequest {
+  UserInput input = 1;
+}
+
+message CreateUserResponse {
+  string id = 1;
+}
+
+message UpdateUserRequest {
+  string id = 1;
+  UserInput input = 2;
+}
+
+message GetDailyTargetRequest {
+  string id = 1;
+}
+
+message GetDailyTargetResponse {
+  int32 daily_calorie_target = 1;
+}
+
+service UserService {
+  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse);
+  rpc GetUserById(calories.common.IdRequest) returns (User);
+  rpc GetUserByEmail(GetUserByEmailRequest) returns (User);
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc UpdateUser(UpdateUserRequest) returns (User);
+  rpc DeleteUser(calories.common.IdRequest) returns (calories.common.BooleanResponse);
+  rpc GetDailyTarget(GetDailyTargetRequest) returns (GetDailyTargetResponse);
+}

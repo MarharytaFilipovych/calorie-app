@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package calories.common;
+
+option java_package = "com.margosha.kse.calories.proto.common";
+option java_outer_classname = "CommonProto";
+option java_multiple_files = true;
+
+message Pagination {
+  int32 limit = 1;
+  int32 offset = 2;
+}
+
+message Meta {
+  int32 page = 1;
+  int64 total_count = 2;
+  int32 page_size = 3;
+  int32 total_pages = 4;
+  bool has_next = 5;
+  bool has_previous = 6;
+}
+
+message IdRequest {
+  string id = 1;
+}
+
+message BooleanResponse {
+  bool success = 1;
+}
+
+message Date {
+  int32 year = 1;
+  int32 month = 2;
+  int32 day = 3;
+}
+
+message Error {
+  string code = 1;
+  string message = 2;
+}

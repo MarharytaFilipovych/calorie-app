@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package calories;
+
+option java_package = "com.margosha.kse.calories.proto";
+option java_outer_classname = "BrandProto";
+option java_multiple_files = true;
+
+import "common.proto";
+
+message Brand {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message BrandInput {
+  string name = 1;
+  string description = 2;
+}
+
+message GetAllBrandsRequest {
+  calories.common.Pagination pagination = 1;
+}
+
+message GetAllBrandsResponse {
+  repeated Brand brands = 1;
+  calories.common.Meta meta = 2;
+}
+
+message GetBrandByNameRequest {
+  string name = 1;
+}
+
+message CreateBrandRequest {
+  BrandInput input = 1;
+}
+
+message UpdateBrandRequest {
+  string id = 1;
+  BrandInput input = 2;
+}
+
+service BrandService {
+  rpc GetAllBrands(GetAllBrandsRequest) returns (GetAllBrandsResponse);
+  rpc GetBrandById(calories.common.IdRequest) returns (Brand);
+  rpc GetBrandByName(GetBrandByNameRequest) returns (Brand);
+  rpc CreateBrand(CreateBrandRequest) returns (Brand);
+  rpc UpdateBrand(UpdateBrandRequest) returns (Brand);
+  rpc DeleteBrand(calories.common.IdRequest) returns (calories.common.BooleanResponse);
+}

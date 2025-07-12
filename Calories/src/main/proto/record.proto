@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package calories;
+
+option java_package = "com.margosha.kse.calories.proto";
+option java_outer_classname = "RecordProto";
+option java_multiple_files = true;
+
+import "google/protobuf/timestamp.proto";
+import "product.proto";
+import "common.proto";
+
+enum MealType {
+  BREAKFAST = 0;
+  LUNCH = 1;
+  DINNER = 2;
+  FIRST_SNACK = 3;
+  SECOND_SNACK = 4;
+  THIRD_SNACK = 5;
+}
+
+
+message RecordInput {
+  repeated ProductRecord products = 1;
+  MealType meal_type = 2;
+}
+
+message Record {
+  string id = 1;
+  MealType meal_type = 2;
+  google.protobuf.Timestamp consumed_at = 3;
+  repeated ProductRecordResponse products = 4;
+  int32 calories_consumed = 5;
+  double total_quantity = 6;
+  double total_proteins = 7;
+  double total_fats = 8;
+  double total_carbohydrates = 9;
+}
+
+message GetRecordsRequest {
+  string user_id = 1;
+  calories.common.Pagination pagination = 2;
+  calories.common.Date date = 3;
+}
+
+message GetRecordsResponse {
+  repeated Record records = 1;
+  calories.common.Meta meta = 2;
+}
+
+message GetRecordRequest {
+  string user_id = 1;
+  string id = 2;
+}
+
+message CreateRecordRequest {
+  string user_id = 1;
+  RecordInput input = 2;
+}
+
+message CreateRecordResponse {
+  string id = 1;
+}
+
+message UpdateRecordRequest {
+  string user_id = 1;
+  string id = 2;
+  RecordInput input = 3;
+}
+
+message DeleteRecordRequest {
+  string user_id = 1;
+  string id = 2;
+}
+
+service RecordService {
+  rpc GetRecords(GetRecordsRequest) returns (GetRecordsResponse);
+  rpc GetRecord(GetRecordRequest) returns (Record);
+  rpc CreateRecord(CreateRecordRequest) returns (CreateRecordResponse);
+  rpc UpdateRecord(UpdateRecordRequest) returns (Record);
+  rpc DeleteRecord(DeleteRecordRequest) returns (calories.common.BooleanResponse);
+}

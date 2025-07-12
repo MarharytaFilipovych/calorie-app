@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package calories;
+
+option java_package = "com.margosha.kse.calories.proto";
+option java_outer_classname = "ProductProto";
+option java_multiple_files = true;
+
+import "brand.proto";
+import "common.proto";
+
+enum MeasurementUnit {
+  GRAMS = 0;
+  MILLILITERS = 1;
+  PIECES = 2;
+}
+
+message ProductInput {
+  string name = 1;
+  string barcode = 2;
+  double proteins = 3;
+  double fats = 4;
+  double carbohydrates = 5;
+  double water = 6;
+  double salt = 7;
+  double sugar = 8;
+  double fiber = 9;
+  double alcohol = 10;
+  string description = 11;
+  int32 calories = 12;
+  MeasurementUnit measurement_unit = 13;
+  string brand_id = 14;
+}
+
+message Product {
+  string id = 1;
+  string name = 2;
+  string barcode = 3;
+  double proteins = 4;
+  double fats = 5;
+  double carbohydrates = 6;
+  double water = 7;
+  double salt = 8;
+  double sugar = 9;
+  double fiber = 10;
+  double alcohol = 11;
+  string description = 12;
+  int32 calories = 13;
+  MeasurementUnit measurement_unit = 14;
+  Brand brand = 15;
+  bool archived = 16;
+}
+
+message ProductRecord {
+  string product_id = 1;
+  double quantity = 2;
+}
+
+message ProductRecordResponse {
+  Product product = 1;
+  double quantity = 2;
+}
+
+message GetProductsRequest {
+  string name = 1;
+  calories.common.Pagination pagination = 2;
+}
+
+message GetProductsResponse {
+  repeated Product products = 1;
+  calories.common.Meta meta = 2;
+}
+
+message CreateProductRequest {
+  ProductInput input = 1;
+}
+
+message CreateProductResponse {
+  string id = 1;
+}
+
+message UpdateProductRequest {
+  string id = 1;
+  ProductInput input = 2;
+}
+
+service ProductService {
+  rpc GetProducts(GetProductsRequest) returns (GetProductsResponse);
+  rpc GetProductById(calories.common.IdRequest) returns (Product);
+  rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
+  rpc UpdateProduct(UpdateProductRequest) returns (Product);
+  rpc DeleteProduct(calories.common.IdRequest) returns (calories.common.BooleanResponse);
+}
