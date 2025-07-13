@@ -89,6 +89,23 @@ message StreamProductsRequest {
   int32 batch_size = 2;
 }
 
+message DeleteProductRequest {
+  string id = 1;
+}
+
+
+message CreateProductStreamRequest {
+  string request_id = 1;
+  string client_id = 2;
+  CreateProductRequest create = 3;
+}
+
+message CreateProductStreamResponse {
+  string request_id = 1;
+  string client_id = 2;
+  Product product = 3;
+  string message = 4;
+}
 service ProductService {
   rpc GetProducts(GetProductsRequest) returns (GetProductsResponse);
   rpc GetProductById(calories.common.IdRequest) returns (Product);
@@ -96,4 +113,5 @@ service ProductService {
   rpc UpdateProduct(UpdateProductRequest) returns (Product);
   rpc DeleteProduct(calories.common.IdRequest) returns (calories.common.BooleanResponse);
   rpc StreamProducts(StreamProductsRequest) returns (stream Product);
+  rpc MutateProducts(stream CreateProductStreamRequest) returns (stream CreateProductStreamResponse);
 }
