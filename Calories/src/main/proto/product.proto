@@ -85,8 +85,11 @@ message UpdateProductRequest {
 }
 
 message StreamProductsRequest {
-  string name_filter = 1;
-  int32 batch_size = 2;
+  string name = 1;
+  string brand = 2;
+  int32 min_calories = 3;
+  int32 max_calories = 4;
+  int32 batch_size = 5;
 }
 
 message DeleteProductRequest {

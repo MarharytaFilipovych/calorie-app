@@ -36,12 +36,16 @@ public class ProductService {
         this.recordService = recordService;
     }
 
-    public Page<ProductResponseDto> getAll(String name, int limit, int offset){
+    public Page<ProductResponseDto> getAll(String name, int limit, int offset, String brand, Integer minCalories, Integer maxCalories){
         Pageable pageable = PageRequest.of(offset - 1, limit);
         Page<Product> productPage;
         if(name == null || name.isBlank())productPage = productRepository.findByArchivedFalse(pageable);
         else productPage =  productRepository.findProductByNameContainingIgnoreCaseAndArchivedIsFalse(name, pageable);
         return productPage.map(productMapper::toDto);
+    }
+
+    public Page<ProductResponseDto> getAll(String name, int limit, int offset){
+       return getAll(name, limit, offset, null, null, null);
     }
 
     public ProductResponseDto create(ProductRequestDto dto){

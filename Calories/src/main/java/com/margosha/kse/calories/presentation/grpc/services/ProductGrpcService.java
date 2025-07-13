@@ -97,10 +97,10 @@ public class ProductGrpcService extends ProductServiceGrpc.ProductServiceImplBas
     @Override
     public void streamProducts(StreamProductsRequest request, StreamObserver<Product> responseObserver) {
         log.info("🚀 Starting product streaming with filter: '{}', batch size: {}",
-                request.getNameFilter(), request.getBatchSize());
+                request.getName(), request.getBatchSize());
         CompletableFuture.runAsync(() -> {
             try {
-                String nameFilter = request.getNameFilter().isEmpty() ? null : request.getNameFilter();
+                String nameFilter = request.getName().isEmpty() ? null : request.getName();
                 int batchSize = request.getBatchSize() > 0 ? request.getBatchSize() : 10;
                 int currentPage = 0;
                 int totalStreamed = 0;
