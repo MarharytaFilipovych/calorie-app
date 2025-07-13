@@ -84,10 +84,16 @@ message UpdateProductRequest {
   ProductInput input = 2;
 }
 
+message StreamProductsRequest {
+  string name_filter = 1;
+  int32 batch_size = 2;
+}
+
 service ProductService {
   rpc GetProducts(GetProductsRequest) returns (GetProductsResponse);
   rpc GetProductById(calories.common.IdRequest) returns (Product);
   rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
   rpc UpdateProduct(UpdateProductRequest) returns (Product);
   rpc DeleteProduct(calories.common.IdRequest) returns (calories.common.BooleanResponse);
+  rpc StreamProducts(StreamProductsRequest) returns (stream Product);
 }

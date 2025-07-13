@@ -27,7 +27,6 @@ public interface ProductGrpcMapper {
     @Mapping(target = "calories", qualifiedByName = "nullToZeroInt")
     Product toProto(ProductResponseDto productDto);
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "brandId", source = "brandId", qualifiedByName = "stringToUuid")
     ProductRequestDto fromProtoInput(ProductInput productInput);
 

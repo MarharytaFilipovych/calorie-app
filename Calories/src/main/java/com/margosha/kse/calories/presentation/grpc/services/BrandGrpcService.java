@@ -60,7 +60,7 @@ public class BrandGrpcService extends BrandServiceGrpc.BrandServiceImplBase {
 
     @Override
     public void createBrand(CreateBrandRequest request, StreamObserver<Brand> responseObserver) {
-        BrandDto brandDto = brandMapper.fromProtoInput(request.getInput());
+        BrandDto brandDto = brandMapper.toDto(request.getInput());
         BrandDto created = brandService.createBrand(brandDto);
         
         responseObserver.onNext(brandMapper.toProto(created));
@@ -70,7 +70,7 @@ public class BrandGrpcService extends BrandServiceGrpc.BrandServiceImplBase {
     @Override
     public void updateBrand(UpdateBrandRequest request, StreamObserver<Brand> responseObserver) {
         UUID id = commonMapper.stringToUuid(request.getId());
-        BrandDto brandDto = brandMapper.fromProtoInput(request.getInput());
+        BrandDto brandDto = brandMapper.toDto(request.getInput());
         BrandDto updated = brandService.updateBrand(brandDto, id);
         
         responseObserver.onNext(brandMapper.toProto(updated));

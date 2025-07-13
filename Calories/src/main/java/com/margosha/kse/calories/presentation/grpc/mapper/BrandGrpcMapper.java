@@ -13,10 +13,5 @@ public interface BrandGrpcMapper {
     Brand toProto(BrandDto brandDto);
 
     @Mapping(target = "id", ignore = true)
-    BrandDto fromProtoInput(BrandInput brandInput);
-
-    default Brand toProtoBrand(BrandDto brandDto) {
-        if (brandDto == null) return Brand.getDefaultInstance();
-        return toProto(brandDto);
-    }
+    BrandDto toDto(BrandInput brandInput);
 }
