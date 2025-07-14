@@ -27,11 +27,13 @@
 		<url/>
 	</scm>
 	<properties>
+		<querydsl.version>5.1.0</querydsl.version>
 		<java.version>17</java.version>
 		<org.mapstruct.version>1.6.3</org.mapstruct.version>
-		<grpc.version>1.59.0</grpc.version>
-		<protobuf.version>3.25.1</protobuf.version>
-		<protoc.version>3.25.1</protoc.version>
+		<grpc.version>1.58.0</grpc.version>
+		<protobuf.version>3.24.0</protobuf.version>
+		<protoc.version>3.24.0</protoc.version>
+		<grpc-spring-boot.version>2.15.0.RELEASE</grpc-spring-boot.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -46,11 +48,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>net.logstash.logback</groupId>-->
-<!--			<artifactId>logstash-logback-encoder</artifactId>-->
-<!--			<version>8.1</version>-->
-<!--		</dependency>-->
+		<dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
+			<version>8.1</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -69,11 +71,6 @@
 			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
@@ -84,19 +81,6 @@
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>com.querydsl</groupId>-->
-<!--			<artifactId>querydsl-jpa</artifactId>-->
-<!--			<version>5.1.0</version>-->
-<!--			<classifier>jakarta</classifier>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>com.querydsl</groupId>-->
-<!--			<artifactId>querydsl-apt</artifactId>-->
-<!--			<version>5.1.0</version>-->
-<!--			<classifier>jakarta</classifier>-->
-<!--			<scope>provided</scope>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -122,6 +106,24 @@
 			<version>2.6.0</version>
 		</dependency>
 		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-jpa</artifactId>
+			<version>${querydsl.version}</version>
+			<classifier>jakarta</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-core</artifactId>
+			<version>${querydsl.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-apt</artifactId>
+			<version>${querydsl.version}</version>
+			<classifier>jakarta</classifier>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-graphql</artifactId>
 		</dependency>
@@ -134,11 +136,15 @@
 			<artifactId>graphql-java-extended-scalars</artifactId>
 			<version>20.2</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>${protobuf.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>net.devh</groupId>
 			<artifactId>grpc-spring-boot-starter</artifactId>
-			<version>2.15.0.RELEASE</version>
+			<version>${grpc-spring-boot.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.grpc</groupId>
@@ -160,7 +166,6 @@
 			<artifactId>grpc-services</artifactId>
 			<version>${grpc.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
@@ -187,12 +192,17 @@
 							<artifactId>lombok</artifactId>
 							<version>${lombok.version}</version>
 						</path>
-<!--						<path>-->
-<!--							<groupId>com.querydsl</groupId>-->
-<!--							<artifactId>querydsl-apt</artifactId>-->
-<!--							<version>5.1.0</version>-->
-<!--							<classifier>jakarta</classifier>-->
-<!--						</path>-->
+						<path>
+							<groupId>com.querydsl</groupId>
+							<artifactId>querydsl-apt</artifactId>
+							<version>${querydsl.version}</version>
+							<classifier>jakarta</classifier>
+						</path>
+						<path>
+							<groupId>jakarta.persistence</groupId>
+							<artifactId>jakarta.persistence-api</artifactId>
+							<version>3.1.0</version>
+						</path>
 						<path>
 							<groupId>org.mapstruct</groupId>
 							<artifactId>mapstruct-processor</artifactId>

@@ -13,6 +13,7 @@ import java.lang.annotation.*;
 public @interface CorrectEnum {
     Class<? extends Enum<?>> enumClass();
     String message() default "Incorrect enum value! Must be any of {enumClass}";
+    boolean required() default true;
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

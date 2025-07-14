@@ -89,13 +89,13 @@ message StreamProductsRequest {
   string brand = 2;
   int32 min_calories = 3;
   int32 max_calories = 4;
-  int32 batch_size = 5;
+  MeasurementUnit measurementUnit = 5;
+  int32 batch_size = 6;
 }
 
 message DeleteProductRequest {
   string id = 1;
 }
-
 
 message CreateProductStreamRequest {
   string request_id = 1;

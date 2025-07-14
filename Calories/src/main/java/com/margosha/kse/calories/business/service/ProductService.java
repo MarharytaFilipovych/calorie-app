@@ -1,5 +1,6 @@
 package com.margosha.kse.calories.business.service;
 
+import com.margosha.kse.calories.business.dto.ProductFilterDto;
 import com.margosha.kse.calories.business.dto.ProductRequestDto;
 import com.margosha.kse.calories.business.dto.ProductResponseDto;
 import com.margosha.kse.calories.business.dto.RecordResponseDto;
@@ -7,9 +8,12 @@ import com.margosha.kse.calories.business.dto.subdto.ProductRecordInResponseDto;
 import com.margosha.kse.calories.business.mapper.ProductMapper;
 import com.margosha.kse.calories.data.entity.Product;
 import com.margosha.kse.calories.data.entity.ProductRecord;
+import com.margosha.kse.calories.data.enums.MeasurementUnit;
 import com.margosha.kse.calories.data.repository.BrandRepository;
 import com.margosha.kse.calories.data.repository.ProductRecordRepository;
 import com.margosha.kse.calories.data.repository.ProductRepository;
+import com.margosha.kse.calories.data.utils.ProductSearchPredicateBuilder;
+import com.querydsl.core.BooleanBuilder;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,7 +40,7 @@ public class ProductService {
         this.recordService = recordService;
     }
 
-    public Page<ProductResponseDto> getAll(String name, int limit, int offset, String brand, Integer minCalories, Integer maxCalories){
+    public Page<ProductResponseDto> getAll(String name, int limit, int offset){
         Pageable pageable = PageRequest.of(offset - 1, limit);
         Page<Product> productPage;
         if(name == null || name.isBlank())productPage = productRepository.findByArchivedFalse(pageable);
@@ -44,8 +48,17 @@ public class ProductService {
         return productPage.map(productMapper::toDto);
     }
 
-    public Page<ProductResponseDto> getAll(String name, int limit, int offset){
-       return getAll(name, limit, offset, null, null, null);
+    public Page<ProductResponseDto> getAllWithFilter(ProductFilterDto filter, int limit, int offset){
+       Pageable pageable = PageRequest.of(offset - 1, limit);
+        BooleanBuilder predicate = ProductSearchPredicateBuilder.create()
+                .withName(filter.getName())
+                .withBrand(filter.getBrandName())
+                .withMeasurementUnit(filter.getMeasurementUnit())
+                .withMaxCalories(filter.getMaxCalories())
+                .withMinCalories(filter.getMinCalories())
+                .build();
+        Page<Product> productPage = productRepository.findAll(predicate, pageable);
+        return productPage.map(productMapper::toDto);
     }
 
     public ProductResponseDto create(ProductRequestDto dto){
