@@ -5,29 +5,27 @@ import com.margosha.kse.calories.proto.Record;
 import com.margosha.kse.calories.proto.common.IdRequest;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
+import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class CaloriesGrpcClient {
 
-    private final UserServiceGrpc.UserServiceBlockingStub userServiceBlockingStub;
-    private final ProductServiceGrpc.ProductServiceBlockingStub productServiceBlockingStub;
-    private final BrandServiceGrpc.BrandServiceBlockingStub brandServiceBlockingStub;
-    private final RecordServiceGrpc.RecordServiceBlockingStub recordServiceBlockingStub;
-    private final ProductServiceGrpc.ProductServiceStub productServiceStub;
+    @GrpcClient("calories-service")
+    private UserServiceGrpc.UserServiceBlockingStub userServiceBlockingStub;
 
-    public CaloriesGrpcClient(UserServiceGrpc.UserServiceBlockingStub userServiceBlockingStub,
-                              ProductServiceGrpc.ProductServiceBlockingStub productServiceBlockingStub,
-                              BrandServiceGrpc.BrandServiceBlockingStub brandServiceBlockingStub,
-                              RecordServiceGrpc.RecordServiceBlockingStub recordServiceBlockingStub,
-                              ProductServiceGrpc.ProductServiceStub productServiceStub) {
-        this.userServiceBlockingStub = userServiceBlockingStub;
-        this.productServiceBlockingStub = productServiceBlockingStub;
-        this.brandServiceBlockingStub = brandServiceBlockingStub;
-        this.recordServiceBlockingStub = recordServiceBlockingStub;
-        this.productServiceStub = productServiceStub;
-    }
+    @GrpcClient("calories-service")
+    private ProductServiceGrpc.ProductServiceBlockingStub productServiceBlockingStub;
+
+    @GrpcClient("calories-service")
+    private BrandServiceGrpc.BrandServiceBlockingStub brandServiceBlockingStub;
+
+    @GrpcClient("calories-service")
+    private RecordServiceGrpc.RecordServiceBlockingStub recordServiceBlockingStub;
+
+    @GrpcClient("calories-service")
+    private ProductServiceGrpc.ProductServiceStub productServiceStub;
 
     public User getUserById(String userId) {
         IdRequest request = IdRequest.newBuilder()
