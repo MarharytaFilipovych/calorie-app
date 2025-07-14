@@ -1,5 +1,7 @@
 package com.margosha.kse.calories.presentation.grpc.client;
 
+import com.margosha.kse.calories.business.dto.ProductFilterDto;
+import com.margosha.kse.calories.presentation.grpc.mapper.ProductGrpcMapper;
 import com.margosha.kse.calories.proto.*;
 import com.margosha.kse.calories.proto.Record;
 import com.margosha.kse.calories.proto.common.IdRequest;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CaloriesGrpcClient {
 
+    private final ProductGrpcMapper productGrpcMapper;
     @GrpcClient("calories-service")
     private UserServiceGrpc.UserServiceBlockingStub userServiceBlockingStub;
 
@@ -26,6 +29,10 @@ public class CaloriesGrpcClient {
 
     @GrpcClient("calories-service")
     private ProductServiceGrpc.ProductServiceStub productServiceStub;
+
+    public CaloriesGrpcClient(ProductGrpcMapper productGrpcMapper) {
+        this.productGrpcMapper = productGrpcMapper;
+    }
 
     public User getUserById(String userId) {
         IdRequest request = IdRequest.newBuilder()
@@ -140,13 +147,16 @@ public class CaloriesGrpcClient {
         return getRecordById(userId, response.getId());
     }
 
-    public void streamProducts(String nameFilter, int batchSize, StreamObserver<Product> responseObserver) {
-        log.info("🚀 Starting client-side product streaming with filter: '{}', batch size: {}", nameFilter, batchSize);
+    public void streamProducts(ProductFilterDto filter, int batchSize, StreamObserver<Product> responseObserver) {
+        log.info("🚀 Starting client-side product streaming with filter: '{}', batch size: {}", filter, batchSize);
 
         StreamProductsRequest.Builder requestBuilder = StreamProductsRequest.newBuilder()
+                .setName(filter.getName())
+                .setBrand(filter.getBrandName())
+                .setMaxCalories(filter.getMaxCalories())
+                .setMinCalories(filter.getMinCalories())
+                .setMeasurementUnit(productGrpcMapper.measurementUnitToProto(filter.getMeasurementUnit()))
                 .setBatchSize(batchSize);
-
-        if (nameFilter != null && !nameFilter.isEmpty()) requestBuilder.setName(nameFilter);
 
         productServiceStub.streamProducts(requestBuilder.build(), new StreamObserver<>() {
             private int receivedCount = 0;

@@ -35,6 +35,7 @@ public interface ProductGrpcMapper {
     @Mapping(target = "productId", source = "productId", qualifiedByName = "stringToUuid")
     ProductRecordInRequestDto fromProtoProductRecord(ProductRecord productRecord);
 
+    ProductFilterDto fromStreamRequest(StreamProductsRequest request);
 
     default List<ProductRecordResponse> toProtoProductRecords(Set<ProductRecordInResponseDto> productRecords) {
         if (productRecords == null || productRecords.isEmpty()) return new ArrayList<>();
@@ -68,4 +69,5 @@ public interface ProductGrpcMapper {
             case UNRECOGNIZED -> throw new IllegalArgumentException("Unknown measurement unit: " + unit);
         };
     }
+
 }

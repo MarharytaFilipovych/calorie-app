@@ -1,5 +1,6 @@
 package com.margosha.kse.calories.presentation.grpc.services;
 
+import com.margosha.kse.calories.business.dto.ProductFilterDto;
 import com.margosha.kse.calories.business.dto.ProductRequestDto;
 import com.margosha.kse.calories.business.dto.ProductResponseDto;
 import com.margosha.kse.calories.business.service.IdempotencyService;
@@ -96,16 +97,16 @@ public class ProductGrpcService extends ProductServiceGrpc.ProductServiceImplBas
 
     @Override
     public void streamProducts(StreamProductsRequest request, StreamObserver<Product> responseObserver) {
-        log.info("🚀 Starting product streaming with filter: '{}', batch size: {}",
-                request.getName(), request.getBatchSize());
+        ProductFilterDto filter = productGrpcMapper.fromStreamRequest(request);
+        log.info("🚀 Starting product streaming with filter - name: '{}', brand: '{}', calories: {}-{}, batch size: {}",
+                filter.getName(), filter.getBrandName(), filter.getMinCalories(), filter.getMaxCalories(), filter.getMeasurementUnit());
         CompletableFuture.runAsync(() -> {
             try {
-                String nameFilter = request.getName().isEmpty() ? null : request.getName();
                 int batchSize = request.getBatchSize() > 0 ? request.getBatchSize() : 10;
                 int currentPage = 0;
                 int totalStreamed = 0;
                 while (true) {
-                    Page<ProductResponseDto> productsPage = productService.getAll(nameFilter, batchSize, currentPage + 1);
+                    Page<ProductResponseDto> productsPage = productService.getAllWithFilter(filter, batchSize, currentPage + 1);
                     List<ProductResponseDto> products = productsPage.getContent();
                     if (products.isEmpty()) {
                         log.info("✅ Product streaming completed. Total products streamed: {}", totalStreamed);
