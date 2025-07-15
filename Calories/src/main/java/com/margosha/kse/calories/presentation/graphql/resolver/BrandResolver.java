@@ -24,6 +24,7 @@ public class BrandResolver {
 
     @QueryMapping
     public Page<BrandDto> brands(@Argument @Valid Pagination pagination){
+        if (pagination == null) pagination = new Pagination();
         return brandService.getAllBrands(pagination.getLimit(), pagination.getOffset());
     }
 

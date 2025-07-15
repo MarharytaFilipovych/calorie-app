@@ -71,13 +71,6 @@ message GetProductsResponse {
   calories.common.Meta meta = 2;
 }
 
-message CreateProductRequest {
-  ProductInput input = 1;
-}
-
-message CreateProductResponse {
-  string id = 1;
-}
 
 message UpdateProductRequest {
   string id = 1;
@@ -100,7 +93,7 @@ message DeleteProductRequest {
 message CreateProductStreamRequest {
   string request_id = 1;
   string client_id = 2;
-  CreateProductRequest create = 3;
+  ProductInput product = 3;
 }
 
 message CreateProductStreamResponse {
@@ -111,10 +104,10 @@ message CreateProductStreamResponse {
 }
 service ProductService {
   rpc GetProducts(GetProductsRequest) returns (GetProductsResponse);
-  rpc GetProductById(calories.common.IdRequest) returns (Product);
-  rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
+  rpc GetProductById(calories.common.Id) returns (Product);
+  rpc CreateProduct(ProductInput) returns (calories.common.Id);
   rpc UpdateProduct(UpdateProductRequest) returns (Product);
-  rpc DeleteProduct(calories.common.IdRequest) returns (calories.common.BooleanResponse);
+  rpc DeleteProduct(calories.common.Id) returns (calories.common.BooleanResponse);
   rpc StreamProducts(StreamProductsRequest) returns (stream Product);
-  rpc MutateProducts(stream CreateProductStreamRequest) returns (stream CreateProductStreamResponse);
+  rpc CreateProducts(stream CreateProductStreamRequest) returns (stream CreateProductStreamResponse);
 }

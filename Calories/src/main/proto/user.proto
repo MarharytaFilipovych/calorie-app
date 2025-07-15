@@ -69,21 +69,9 @@ message GetUserByEmailRequest {
   string email = 1;
 }
 
-message CreateUserRequest {
-  UserInput input = 1;
-}
-
-message CreateUserResponse {
-  string id = 1;
-}
-
 message UpdateUserRequest {
   string id = 1;
   UserInput input = 2;
-}
-
-message GetDailyTargetRequest {
-  string id = 1;
 }
 
 message GetDailyTargetResponse {
@@ -92,10 +80,10 @@ message GetDailyTargetResponse {
 
 service UserService {
   rpc GetUsers(GetUsersRequest) returns (GetUsersResponse);
-  rpc GetUserById(calories.common.IdRequest) returns (User);
+  rpc GetUserById(calories.common.Id) returns (User);
   rpc GetUserByEmail(GetUserByEmailRequest) returns (User);
-  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc CreateUser(UserInput) returns (calories.common.Id);
   rpc UpdateUser(UpdateUserRequest) returns (User);
-  rpc DeleteUser(calories.common.IdRequest) returns (calories.common.BooleanResponse);
-  rpc GetDailyTarget(GetDailyTargetRequest) returns (GetDailyTargetResponse);
+  rpc DeleteUser(calories.common.Id) returns (calories.common.BooleanResponse);
+  rpc GetDailyTarget(calories.common.Id) returns (GetDailyTargetResponse);
 }

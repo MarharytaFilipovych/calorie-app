@@ -79,6 +79,7 @@ public interface CommonGrpcMapper {
         return LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
     }
 
+    @Named("localDateTimeToTimestamp")
     default Timestamp localDateTimeToTimestamp(LocalDateTime dateTime) {
         if (dateTime == null) return null;
         return Timestamp.newBuilder()
@@ -94,5 +95,13 @@ public interface CommonGrpcMapper {
                 timestamp.getNanos(),
                 java.time.ZoneOffset.UTC
         );
+    }
+
+    default com.margosha.kse.calories.presentation.model.Pagination toModel(Pagination paginationProto) {
+        if (paginationProto == null) return new com.margosha.kse.calories.presentation.model.Pagination();
+        com.margosha.kse.calories.presentation.model.Pagination pagination = new com.margosha.kse.calories.presentation.model.Pagination();
+        if (paginationProto.getLimit() > 0) pagination.setLimit(paginationProto.getLimit());
+        if (paginationProto.getOffset() > 0) pagination.setOffset(paginationProto.getOffset());
+        return pagination;
     }
 }

@@ -93,6 +93,7 @@ public class RecordService {
         return true;
     }
 
+    @Transactional
     public RecordResponseDto getConsumption(UUID userId, UUID id){
         com.margosha.kse.calories.data.entity.Record record = recordRepository.findByIdAndUser_Id(id, userId)
                 .orElseThrow(() -> new EntityNotFoundException(id.toString()));

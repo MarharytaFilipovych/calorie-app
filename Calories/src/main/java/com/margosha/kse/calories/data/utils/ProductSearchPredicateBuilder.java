@@ -3,7 +3,6 @@ package com.margosha.kse.calories.data.utils;
 import com.margosha.kse.calories.data.entity.QProduct;
 import com.querydsl.core.BooleanBuilder;
 import org.springframework.util.StringUtils;
-
 import java.util.Optional;
 
 public class ProductSearchPredicateBuilder {

@@ -2,15 +2,16 @@ package com.margosha.kse.calories.presentation.grpc.services;
 
 import com.margosha.kse.calories.business.dto.BrandDto;
 import com.margosha.kse.calories.business.service.BrandService;
+import com.margosha.kse.calories.presentation.annotations.OptionalGrpcRequest;
 import com.margosha.kse.calories.presentation.grpc.mapper.BrandGrpcMapper;
 import com.margosha.kse.calories.presentation.grpc.mapper.CommonGrpcMapper;
+import com.margosha.kse.calories.presentation.model.Pagination;
 import com.margosha.kse.calories.proto.*;
 import com.margosha.kse.calories.proto.common.BooleanResponse;
-import com.margosha.kse.calories.proto.common.IdRequest;
+import com.margosha.kse.calories.proto.common.Id;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.data.domain.Page;
-
 import java.util.UUID;
 
 @GrpcService
@@ -19,18 +20,17 @@ public class BrandGrpcService extends BrandServiceGrpc.BrandServiceImplBase {
     private final BrandGrpcMapper brandMapper;
     private final CommonGrpcMapper commonMapper;
 
-    public BrandGrpcService(BrandService brandService, BrandGrpcMapper brandMapper, CommonGrpcMapper commonMapper) {
+    public BrandGrpcService(BrandService brandService, BrandGrpcMapper brandGrpcMapper, CommonGrpcMapper commonGrpcMapper) {
         this.brandService = brandService;
-        this.brandMapper = brandMapper;
-        this.commonMapper = commonMapper;
+        this.brandMapper = brandGrpcMapper;
+        this.commonMapper = commonGrpcMapper;
     }
 
     @Override
+    @OptionalGrpcRequest
     public void getAllBrands(GetAllBrandsRequest request, StreamObserver<GetAllBrandsResponse> responseObserver) {
-        int limit = request.getPagination().getLimit() > 0 ? request.getPagination().getLimit() : 20;
-        int offset = request.getPagination().getOffset() > 0 ? request.getPagination().getOffset() : 1;
-
-        Page<BrandDto> brands = brandService.getAllBrands(limit, offset);
+        Pagination pagination = commonMapper.toModel(request.getPagination());
+        Page<BrandDto> brands = brandService.getAllBrands(pagination.getLimit(), pagination.getOffset());
         
         GetAllBrandsResponse response = GetAllBrandsResponse.newBuilder()
                 .addAllBrands(brands.getContent().stream().map(brandMapper::toProto).toList())
@@ -42,7 +42,7 @@ public class BrandGrpcService extends BrandServiceGrpc.BrandServiceImplBase {
     }
 
     @Override
-    public void getBrandById(IdRequest request, StreamObserver<Brand> responseObserver) {
+    public void getBrandById(Id request, StreamObserver<Brand> responseObserver) {
         UUID id = commonMapper.stringToUuid(request.getId());
         BrandDto brandDto = brandService.getBrandById(id);
         
@@ -59,11 +59,10 @@ public class BrandGrpcService extends BrandServiceGrpc.BrandServiceImplBase {
     }
 
     @Override
-    public void createBrand(CreateBrandRequest request, StreamObserver<Brand> responseObserver) {
-        BrandDto brandDto = brandMapper.toDto(request.getInput());
+    public void createBrand(BrandInput request, StreamObserver<Id> responseObserver) {
+        BrandDto brandDto = brandMapper.toDto(request);
         BrandDto created = brandService.createBrand(brandDto);
-        
-        responseObserver.onNext(brandMapper.toProto(created));
+        responseObserver.onNext(Id.newBuilder().setId(created.getId().toString()).build());
         responseObserver.onCompleted();
     }
 
@@ -72,20 +71,18 @@ public class BrandGrpcService extends BrandServiceGrpc.BrandServiceImplBase {
         UUID id = commonMapper.stringToUuid(request.getId());
         BrandDto brandDto = brandMapper.toDto(request.getInput());
         BrandDto updated = brandService.updateBrand(brandDto, id);
-        
         responseObserver.onNext(brandMapper.toProto(updated));
         responseObserver.onCompleted();
     }
 
     @Override
-    public void deleteBrand(IdRequest request, StreamObserver<BooleanResponse> responseObserver) {
+    public void deleteBrand(Id request, StreamObserver<BooleanResponse> responseObserver) {
         UUID id = commonMapper.stringToUuid(request.getId());
         boolean deleted = brandService.deleteBrand(id);
         
         BooleanResponse response = BooleanResponse.newBuilder()
                 .setSuccess(deleted)
                 .build();
-
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }

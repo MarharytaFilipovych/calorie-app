@@ -1,54 +1,64 @@
 package com.margosha.kse.calories.presentation.grpc.mapper;
 
-import com.margosha.kse.calories.business.dto.*;
+import com.margosha.kse.calories.business.dto.RecordRequestDto;
+import com.margosha.kse.calories.business.dto.RecordResponseDto;
 import com.margosha.kse.calories.proto.*;
 import com.margosha.kse.calories.presentation.enums.MealType;
 import com.margosha.kse.calories.proto.Record;
-import org.mapstruct.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import java.util.ArrayList;
-import java.util.List;
+@Component
+@RequiredArgsConstructor
+public class RecordGrpcMapper {
 
-@Mapper(componentModel = "spring", uses = {CommonGrpcMapper.class, ProductGrpcMapper.class})
-public interface RecordGrpcMapper {
+    private final CommonGrpcMapper commonGrpcMapper;
+    private final ProductGrpcMapper productGrpcMapper;
 
-    @Mapping(target = "id", qualifiedByName = "uuidToString")
-    @Mapping(target = "productsList", source = "products")
-    com.margosha.kse.calories.proto.Record toProto(RecordResponseDto recordDto);
 
-    @Mapping(target = "productRecords", source = "productsList")
-    RecordRequestDto fromProtoInput(RecordInput recordInput);
+    public Record toProto(RecordResponseDto dto) {
+        if (dto == null) return null;
 
-    default com.margosha.kse.calories.proto.MealType mealTypeToProto(MealType mealType) {
-        if (mealType == null) return com.margosha.kse.calories.proto.MealType.BREAKFAST;
-        return switch (mealType) {
-            case BREAKFAST -> com.margosha.kse.calories.proto.MealType.BREAKFAST;
-            case LUNCH -> com.margosha.kse.calories.proto.MealType.LUNCH;
-            case DINNER -> com.margosha.kse.calories.proto.MealType.DINNER;
-            case FIRST_SNACK -> com.margosha.kse.calories.proto.MealType.FIRST_SNACK;
-            case SECOND_SNACK -> com.margosha.kse.calories.proto.MealType.SECOND_SNACK;
-            case THIRD_SNACK -> com.margosha.kse.calories.proto.MealType.THIRD_SNACK;
-        };
+        Record.Builder builder = Record.newBuilder()
+                .setId(commonGrpcMapper.uuidToString(dto.getId()))
+                .setConsumedAt(commonGrpcMapper.localDateTimeToTimestamp(dto.getConsumedAt()))
+                .setMealType(mealTypeToProto(dto.getMealType()))
+                .setCaloriesConsumed(dto.getCaloriesConsumed())
+                .setTotalQuantity(dto.getTotalQuantity())
+                .setTotalProteins(dto.getTotalProteins())
+                .setTotalFats(dto.getTotalFats())
+                .setTotalCarbohydrates(dto.getTotalCarbohydrates());
+
+        if (dto.getProducts() != null && !dto.getProducts().isEmpty()) {
+            List<ProductRecordResponse> protoProducts =
+                    productGrpcMapper.toProtoProductRecords(dto.getProducts());
+            builder.addAllProducts(protoProducts);
+        }
+        return builder.build();
     }
 
-    default List<Record> toProtoRecords(List<RecordResponseDto> records) {
+    public List<Record> toProtoRecords(List<RecordResponseDto> records) {
         if (records == null || records.isEmpty()) return new ArrayList<>();
-        return records.stream()
-                .map(this::toProto)
-                .toList();
+        return records.stream().map(this::toProto).collect(Collectors.toList());
     }
 
+    public RecordRequestDto toDto(RecordInput input) {
+        if (input == null) return null;
+        RecordRequestDto dto = new RecordRequestDto();
+        dto.setProductRecords(productGrpcMapper.fromProtoProductRecords(input.getProductsList()));
+        dto.setMealType(protoToMealType(input.getMealType()));
+        return dto;
+    }
 
-    default MealType protoToMealType(com.margosha.kse.calories.proto.MealType mealType) {
+    public com.margosha.kse.calories.proto.MealType mealTypeToProto(MealType mealType) {
+        if (mealType == null) return com.margosha.kse.calories.proto.MealType.BREAKFAST;
+        return com.margosha.kse.calories.proto.MealType.valueOf(mealType.name());
+    }
+
+    public MealType protoToMealType(com.margosha.kse.calories.proto.MealType mealType) {
         if (mealType == null) return MealType.BREAKFAST;
-        return switch (mealType) {
-            case BREAKFAST -> MealType.BREAKFAST;
-            case LUNCH -> MealType.LUNCH;
-            case DINNER -> MealType.DINNER;
-            case FIRST_SNACK -> MealType.FIRST_SNACK;
-            case SECOND_SNACK -> MealType.SECOND_SNACK;
-            case THIRD_SNACK -> MealType.THIRD_SNACK;
-            case UNRECOGNIZED -> throw new IllegalArgumentException("Unknown meal type: " + mealType);
-        };
+        return MealType.valueOf(mealType.name());
     }
 }

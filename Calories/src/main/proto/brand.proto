@@ -43,9 +43,9 @@ message UpdateBrandRequest {
 
 service BrandService {
   rpc GetAllBrands(GetAllBrandsRequest) returns (GetAllBrandsResponse);
-  rpc GetBrandById(calories.common.IdRequest) returns (Brand);
+  rpc GetBrandById(calories.common.Id) returns (Brand);
   rpc GetBrandByName(GetBrandByNameRequest) returns (Brand);
-  rpc CreateBrand(CreateBrandRequest) returns (Brand);
+  rpc CreateBrand(BrandInput) returns (calories.common.Id);
   rpc UpdateBrand(UpdateBrandRequest) returns (Brand);
-  rpc DeleteBrand(calories.common.IdRequest) returns (calories.common.BooleanResponse);
+  rpc DeleteBrand(calories.common.Id) returns (calories.common.BooleanResponse);
 }

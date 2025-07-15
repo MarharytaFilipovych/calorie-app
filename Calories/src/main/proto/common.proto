@@ -20,7 +20,7 @@ message Meta {
   bool has_previous = 6;
 }
 
-message IdRequest {
+message Id {
   string id = 1;
 }
 

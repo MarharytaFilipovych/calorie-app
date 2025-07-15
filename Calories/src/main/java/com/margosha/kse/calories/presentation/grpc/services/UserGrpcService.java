@@ -2,16 +2,21 @@ package com.margosha.kse.calories.presentation.grpc.services;
 
 import com.margosha.kse.calories.business.dto.UserDto;
 import com.margosha.kse.calories.business.service.UserService;
+import com.margosha.kse.calories.presentation.annotations.OptionalGrpcRequest;
 import com.margosha.kse.calories.presentation.grpc.mapper.CommonGrpcMapper;
 import com.margosha.kse.calories.presentation.grpc.mapper.UserGrpcMapper;
+import com.margosha.kse.calories.presentation.model.Pagination;
 import com.margosha.kse.calories.proto.*;
 import com.margosha.kse.calories.proto.common.*;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.data.domain.Page;
 import java.util.UUID;
 
 @GrpcService
+@Slf4j
 public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
 
     private final UserService userService;
@@ -19,32 +24,38 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
     private final CommonGrpcMapper commonMapper;
 
     public UserGrpcService(UserService userService,
-                           UserGrpcMapper userMapper,
-                           CommonGrpcMapper commonMapper) {
+                           UserGrpcMapper userGrpcMapper,
+                           CommonGrpcMapper commonGrpcMapper) {
         this.userService = userService;
-        this.userMapper = userMapper;
-        this.commonMapper = commonMapper;
+        this.userMapper = userGrpcMapper;
+        this.commonMapper = commonGrpcMapper;
     }
 
     @Override
+    @OptionalGrpcRequest
     public void getUsers(GetUsersRequest request, StreamObserver<GetUsersResponse> responseObserver) {
-        Pagination pagination = request.getPagination();
-        int limit = pagination.getLimit() > 0 ? pagination.getLimit() : 20;
-        int offset = pagination.getOffset() > 0 ? pagination.getOffset() : 1;
+        try {
+            Pagination pagination = commonMapper.toModel(request.getPagination());
+            Page<UserDto> users = userService.getAllUsers(pagination.getLimit(), pagination.getOffset());
 
-        Page<UserDto> users = userService.getAllUsers(limit, offset);
+            GetUsersResponse response = GetUsersResponse.newBuilder()
+                    .addAllUsers(users.getContent().stream().map(userMapper::toProto).toList())
+                    .setMeta(commonMapper.toProto(users))
+                    .build();
 
-        GetUsersResponse response = GetUsersResponse.newBuilder()
-                .addAllUsers(users.getContent().stream().map(userMapper::toProto).toList())
-                .setMeta(commonMapper.toProto(users))
-                .build();
-
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            log.error("Error in GetUsers", e);
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("Failed to get users: " + e.getMessage())
+                    .withCause(e)
+                    .asRuntimeException());
+        }
     }
 
     @Override
-    public void getUserById(IdRequest request, StreamObserver<User> responseObserver) {
+    public void getUserById(Id request, StreamObserver<User> responseObserver) {
         UUID id = commonMapper.stringToUuid(request.getId());
         UserDto user = userService.getUserById(id);
         responseObserver.onNext(userMapper.toProto(user));
@@ -60,43 +71,35 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
     }
 
     @Override
-    public void createUser(CreateUserRequest request, StreamObserver<CreateUserResponse> responseObserver) {
-        UserDto userDto = userMapper.fromProtoInput(request.getInput());
+    public void createUser(UserInput request, StreamObserver<Id> responseObserver) {
+        UserDto userDto = userMapper.toDto(request);
         UserDto created = userService.createUser(userDto);
-
-        CreateUserResponse response = CreateUserResponse.newBuilder()
-                .setId(commonMapper.uuidToString(created.getId()))
-                .build();
-
-        responseObserver.onNext(response);
+        responseObserver.onNext(Id.newBuilder().setId(created.getId().toString()).build());
         responseObserver.onCompleted();
     }
 
     @Override
     public void updateUser(UpdateUserRequest request, StreamObserver<User> responseObserver) {
         UUID id = commonMapper.stringToUuid(request.getId());
-        UserDto userDto = userMapper.fromProtoInput(request.getInput());
+        UserDto userDto = userMapper.toDto(request.getInput());
         UserDto updated = userService.updateUser(userDto, id);
-
         responseObserver.onNext(userMapper.toProto(updated));
         responseObserver.onCompleted();
     }
 
     @Override
-    public void deleteUser(IdRequest request, StreamObserver<BooleanResponse> responseObserver) {
+    public void deleteUser(Id request, StreamObserver<BooleanResponse> responseObserver) {
         UUID id = commonMapper.stringToUuid(request.getId());
         boolean deleted = userService.deleteUser(id);
-
         BooleanResponse response = BooleanResponse.newBuilder()
                 .setSuccess(deleted)
                 .build();
-
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
 
     @Override
-    public void getDailyTarget(GetDailyTargetRequest request, StreamObserver<GetDailyTargetResponse> responseObserver) {
+    public void getDailyTarget(Id request, StreamObserver<GetDailyTargetResponse> responseObserver) {
         UUID id = commonMapper.stringToUuid(request.getId());
         int dailyTarget = userService.getDailyTarget(id);
 

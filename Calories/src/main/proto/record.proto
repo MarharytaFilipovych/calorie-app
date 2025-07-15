@@ -48,35 +48,25 @@ message GetRecordsResponse {
   calories.common.Meta meta = 2;
 }
 
-message GetRecordRequest {
-  string user_id = 1;
-  string id = 2;
-}
-
 message CreateRecordRequest {
   string user_id = 1;
   RecordInput input = 2;
 }
 
-message CreateRecordResponse {
-  string id = 1;
-}
-
 message UpdateRecordRequest {
-  string user_id = 1;
-  string id = 2;
-  RecordInput input = 3;
+  RecordRequest record_request = 1;
+  RecordInput input = 2;
 }
 
-message DeleteRecordRequest {
+message RecordRequest {
   string user_id = 1;
   string id = 2;
 }
 
 service RecordService {
   rpc GetRecords(GetRecordsRequest) returns (GetRecordsResponse);
-  rpc GetRecord(GetRecordRequest) returns (Record);
-  rpc CreateRecord(CreateRecordRequest) returns (CreateRecordResponse);
+  rpc GetRecord(RecordRequest) returns (Record);
+  rpc CreateRecord(CreateRecordRequest) returns (calories.common.Id);
   rpc UpdateRecord(UpdateRecordRequest) returns (Record);
-  rpc DeleteRecord(DeleteRecordRequest) returns (calories.common.BooleanResponse);
+  rpc DeleteRecord(RecordRequest) returns (calories.common.BooleanResponse);
 }

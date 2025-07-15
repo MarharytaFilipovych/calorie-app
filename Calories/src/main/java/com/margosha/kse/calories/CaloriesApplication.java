@@ -13,7 +13,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableJpaAuditing
 @EnableScheduling
 public class CaloriesApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(CaloriesApplication.class, args);
 	}
