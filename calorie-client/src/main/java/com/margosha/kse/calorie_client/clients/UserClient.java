@@ -4,6 +4,7 @@ import com.margosha.kse.calorie_client.dto.User;
 import com.margosha.kse.calorie_client.model.IdResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -12,7 +13,8 @@ import java.util.UUID;
 @Component
 @Slf4j
 public class UserClient {
-    private final String resource = "/users";
+    @Value("${client.user}")
+    private String resource;
     private final WebClient webClient;
 
     public UserClient(WebClient webClient) {

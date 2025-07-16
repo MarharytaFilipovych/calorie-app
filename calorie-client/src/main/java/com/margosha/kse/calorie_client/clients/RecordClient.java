@@ -6,6 +6,8 @@ import com.margosha.kse.calorie_client.dto.RecordRequest;
 import com.margosha.kse.calorie_client.dto.RecordResponse;
 import com.margosha.kse.calorie_client.model.IdResponse;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -13,9 +15,11 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Slf4j
 @Component
 public class RecordClient {
-    private final String resource = "/users/{userId}/records";
+    @Value("${client.record}")
+    private String resource;
     private final WebClient webClient;
 
     public RecordClient(WebClient webClient) {
@@ -47,7 +51,8 @@ public class RecordClient {
                 .uri(uriBuilder -> uriBuilder.path(resource + "/{recordId}")
                         .build(userId, id))
                 .retrieve()
-                .bodyToMono(RecordResponse.class);
+                .bodyToMono(RecordResponse.class)
+                .doOnNext(record ->log.info("🎂Got record {} ", record));
     }
 
     public Mono<Void> deleteRecord(@NotNull UUID userId, @NotNull UUID id){
@@ -73,6 +78,7 @@ public class RecordClient {
                 .body(Mono.just(recordRequest), RecordRequest.class)
                 .retrieve()
                 .bodyToMono(IdResponse.class)
-                .map(IdResponse::getId);
+                .map(IdResponse::getId)
+                .doOnNext(id ->log.info( "🎂Created record with id {} ", id));
     }
 }

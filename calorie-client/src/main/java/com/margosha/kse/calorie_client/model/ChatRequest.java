@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public  class ChatRequest {
+public class ChatRequest {
     @NotBlank(message = "Message cannot be blank")
     @Size(max = 2000, message = "Message too long (max 2000 characters)")
     private String message;

@@ -13,7 +13,11 @@ public class LLMSettings {
     @NotBlank
     private String apiKey;
 
-    private String model = "gpt-4o-mini";
+    @NotBlank
+    private String model;
+
+    @NotBlank
+    private String url;
 
     private MaxLimits max = new MaxLimits();
 
@@ -35,5 +39,8 @@ public class LLMSettings {
         @Min(100)
         @Max(10000)
         private int tokensPerMinute = 5000;
+
+        @Min(1)
+        private int rounds = 5;
     }
 }

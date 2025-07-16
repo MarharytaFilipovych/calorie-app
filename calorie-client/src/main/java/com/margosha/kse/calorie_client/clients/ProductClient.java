@@ -4,6 +4,7 @@ import com.margosha.kse.calorie_client.dto.PaginatedResponse;
 import com.margosha.kse.calorie_client.dto.Pagination;
 import com.margosha.kse.calorie_client.dto.Product;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -12,7 +13,8 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class ProductClient {
-    private final String resource = "/products";
+    @Value("${client.product}")
+    private String resource;
     private final WebClient webClient;
 
     public ProductClient(WebClient webClient) {

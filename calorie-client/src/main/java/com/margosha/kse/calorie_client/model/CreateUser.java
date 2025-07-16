@@ -1,43 +1,43 @@
+// Replace your existing CreateUser.java with this version
 package com.margosha.kse.calorie_client.model;
 
 import com.fasterxml.jackson.annotation.JsonClassDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
 @JsonClassDescription("Create a new user profile for calorie tracking")
 public class CreateUser {
     @JsonPropertyDescription("User's email address")
-    private String email;
+    private String email = "user@example.com";
 
     @JsonPropertyDescription("User's first name")
-    private String firstName;
+    private String firstName = "John";
 
     @JsonPropertyDescription("User's last name")
-    private String lastName;
+    private String lastName = "Doe";
 
     @JsonPropertyDescription("Birth date in YYYY-MM-DD format")
-    private String birthDate;
+    private String birthDate = "1990-01-01";
 
-    @JsonPropertyDescription("User's gender: MALE or FEMALE")
-    private String gender;
+    @JsonPropertyDescription("User's gender: MALE, FEMALE, OTHER")
+    private String gender = "OTHER";
 
-    @JsonPropertyDescription("Weight in kilograms (20-250)")
-    private Double weight;
+    @JsonPropertyDescription("Weight in kilograms")
+    private Double weight = 70.0;
 
-    @JsonPropertyDescription("Height in centimeters (100-230)")
-    private Double height;
+    @JsonPropertyDescription("Height in centimeters")
+    private Double height = 170.0;
 
-    @JsonPropertyDescription("Daily activity level: SEDENTARY, LOW, MODERATE, HIGH, VERY_HIGH")
-    private String activityLevel;
+    @JsonPropertyDescription("Daily activity level: LOW, MODERATE, HIGH")
+    private String activityLevel = "MODERATE";
 
     @JsonPropertyDescription("Weight goal: LOSE, MAINTAIN, GAIN")
-    private String goal;
+    private String goal = "MAINTAIN";
 
-    @JsonPropertyDescription("Target weight in kg (optional, 30-120)")
-    private Double targetWeight;
+    @JsonPropertyDescription("Target weight in kg")
+    private Double targetWeight = 70.0;
 
-    @JsonPropertyDescription("Phone number (optional). Telephone must be in format +[country code][number] (e.g., +380123456789), regexp -> ^\\+\\d{1,4}\\d{6,14}$")
+    @JsonPropertyDescription("Phone number (optional)")
     private String telephone;
 }

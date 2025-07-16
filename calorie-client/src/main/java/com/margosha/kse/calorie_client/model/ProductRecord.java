@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 public class ProductRecord {
-        @JsonPropertyDescription("Product's unique identifier (UUID)")
-        private String productId;
+    @JsonPropertyDescription("Product's unique identifier (UUID)")
+    private String productId;
 
-        @JsonPropertyDescription("Quantity consumed (minimum 0.1)")
-        private Double quantity;
+    @JsonPropertyDescription("Quantity consumed (minimum 0.1)")
+    private Double quantity;
 }

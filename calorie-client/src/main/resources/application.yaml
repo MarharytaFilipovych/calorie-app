@@ -15,6 +15,11 @@ calories:
     timeout: 30s
     connection-timeout: 10s
 
+client:
+  product: /products
+  record: /users/{userId}/records
+  user: /users
+
 guard:
   suspicious-patterns:
     - ignore
@@ -81,10 +86,12 @@ guard:
 
 llm:
   api-key: ${API_KEY_AI}
-  model: gpt-4o-mini
+  model: gemma2-9b-it
+  url: https://api.groq.com/openai/v1
   max:
-    tokens: 1000
+    tokens: 8190
     requests-per-minute: 10
     tokens-per-minute: 10000
+    rounds: 5
   temperature: 0.7
   token-live-time-in-ms: 60000
