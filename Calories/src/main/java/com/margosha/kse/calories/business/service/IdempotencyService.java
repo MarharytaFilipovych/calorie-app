@@ -29,7 +29,6 @@ public class IdempotencyService {
     public boolean isProcessed(String requestId) {
         return processedRequests.containsKey(requestId);
     }
-    
 
     public ProcessedRequest getProcessedResult(String requestId) {
         return processedRequests.get(requestId);

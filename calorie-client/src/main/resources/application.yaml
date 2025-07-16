@@ -1,0 +1,90 @@
+server:
+  port: 8089
+
+spring:
+  application:
+    name: calorie-client
+
+calories:
+  client:
+    base-url: http://localhost:8083/v1
+    max-retries: 3
+    retry-delay: 1s
+    max-retry-delay: 10s
+    retry-multiplier: 2.0
+    timeout: 30s
+    connection-timeout: 10s
+
+guard:
+  suspicious-patterns:
+    - ignore
+    - forget
+    - disregard
+    - instead
+    - however
+    - "but now"
+    - "new instructions"
+    - system
+    - assistant
+    - user
+    - human
+    - jailbreak
+    - roleplay
+    - pretend
+    - "act as"
+    - simulate
+    - override
+    - bypass
+    - disable
+    - "turn off"
+    - "shut down"
+    - admin
+    - root
+    - sudo
+    - execute
+    - "run code"
+    - "eval("
+    - "function("
+    - console.log
+    - "alert("
+    - document.
+    - "\\n\\n"
+    - "---"
+    - "```"
+    - "###"
+    - "IMPORTANT:"
+    - "URGENT:"
+    - "CRITICAL:"
+    - "CONFIDENTIAL:"
+    - "SECRET:"
+    - "PRIVATE:"
+
+  regex:
+    command-injection: "(\\\\n|\\\\r|\\\\t|\\\\|\\\\\\\\|\\$\\{|\\$\\(|`|;|\\||&|<|>|\\*)"
+    role-injection: "(you are now|from now on|forget everything|ignore all|new persona|act like|pretend to be)"
+
+  thresholds:
+    safe-risk-score-boundary: 0.7
+    length-limit: 2000
+    repetition:
+      min-length: 50
+      chunk-size: 10
+      max-count: 3
+
+  weights:
+    suspicious-keyword: 0.3
+    command-injection: 0.5
+    role-injection: 0.7
+    too-long: 0.2
+    excessive-repetition: 0.3
+    encoding-attempt: 0.4
+
+llm:
+  api-key: ${API_KEY_AI}
+  model: gpt-4o-mini
+  max:
+    tokens: 1000
+    requests-per-minute: 10
+    tokens-per-minute: 10000
+  temperature: 0.7
+  token-live-time-in-ms: 60000

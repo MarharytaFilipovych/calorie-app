@@ -66,6 +66,7 @@ services:
     container_name: calories-producer
     ports:
       - "8083:8083"
+      - "9090:9090"
     environment:
       DB_URL: jdbc:mysql://mysql:3306/calories_db
       DB_USER: app_user
@@ -121,6 +122,20 @@ services:
     depends_on:
       zipkin:
         condition: service_healthy
+      calories-producer:
+        condition: service_healthy
+    restart: unless-stopped
+  
+  calories-rest-client:
+    build:
+      context: ./calorie-client
+      dockerfile: Dockerfile
+    container-name: calorie-rest-client
+    ports:
+    - "8089:8089"
+    environment:
+      API_KEY_AI: f1wLvpQDY6XN3Yubn04r0zYYx2F4wDeC
+    depends_on:
       calories-producer:
         condition: service_healthy
     restart: unless-stopped

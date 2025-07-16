@@ -86,10 +86,10 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-amqp</artifactId>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-amqp</artifactId>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>com.apollographql.federation</groupId>
 			<artifactId>federation-graphql-java-support</artifactId>

@@ -1,13 +1,16 @@
 package com.margosha.kse.calorie_client.clients;
 
 import com.margosha.kse.calorie_client.dto.User;
+import com.margosha.kse.calorie_client.model.IdResponse;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @Component
+@Slf4j
 public class UserClient {
     private final String resource = "/users";
     private final WebClient webClient;
@@ -21,13 +24,16 @@ public class UserClient {
                 .uri(uriBuilder -> uriBuilder.path(resource).build())
                 .body(Mono.just(user), User.class)
                 .retrieve()
-                .bodyToMono(UUID.class);
+                .bodyToMono(IdResponse.class)
+                .map(IdResponse::getId)
+                .doOnNext(id -> log.info("🌷Received user ID: {}", id));
     }
 
     public Mono<User> getUser(@NotNull UUID id){
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path(resource).pathSegment(id.toString()).build())
                 .retrieve()
-                .bodyToMono(User.class);
+                .bodyToMono(User.class)
+                .doOnNext(user -> log.info("🌷Received user: {}", user));
     }
 }

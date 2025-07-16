@@ -4,6 +4,7 @@ import com.margosha.kse.calorie_client.dto.PaginatedResponse;
 import com.margosha.kse.calorie_client.dto.Pagination;
 import com.margosha.kse.calorie_client.dto.RecordRequest;
 import com.margosha.kse.calorie_client.dto.RecordResponse;
+import com.margosha.kse.calorie_client.model.IdResponse;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
@@ -71,6 +72,7 @@ public class RecordClient {
                 .uri(uriBuilder -> uriBuilder.path(resource).build(userId))
                 .body(Mono.just(recordRequest), RecordRequest.class)
                 .retrieve()
-                .bodyToMono(UUID.class);
+                .bodyToMono(IdResponse.class)
+                .map(IdResponse::getId);
     }
 }
