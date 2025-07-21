@@ -7,7 +7,7 @@ spring:
 
 calories:
   client:
-    base-url: http://localhost:8083
+    base-url: ${CALORIES_CLIENT_BASE_URL:http://localhost:8083}
     max-retries: 3
     retry-delay: 1s
     max-retry-delay: 10s

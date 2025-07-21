@@ -135,6 +135,7 @@ services:
     - "8089:8089"
     environment:
       API_KEY_AI: ${GROQ_API_KEY}
+      CALORIES_CLIENT_BASE_URL: http://calories-producer:8083
     depends_on:
       calories-producer:
         condition: service_healthy
